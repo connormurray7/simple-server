@@ -10,7 +10,7 @@ public:
 
 class KQueuePoller : public Poller {
 public:
-    void loop_forever(int kq, int local_socket);
+    void loop_forever(int local_socket);
 };
 
 class EPollPoller : public Poller {};

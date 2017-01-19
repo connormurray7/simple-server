@@ -23,7 +23,16 @@ int conn_add(int fd) {
     return 0;
 }
 
-void KQueuePoller::loop_forever(int kq, int local_socket) {
+void KQueuePoller::loop_forever(int local_socket) {
+    struct kevent evSet;
+
+    int kq = kqueue();
+    
+    EV_SET(&evSet, local_socket, EVFILT_READ, EV_ADD, 0, 0, NULL);
+    if (kevent(kq, &evSet, 1, NULL, 0, NULL) == -1) {
+        err(1, "kevent");
+    }
+
     struct kevent evSet;
     struct kevent evList[32];
     int nev, i;
