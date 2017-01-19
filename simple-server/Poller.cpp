@@ -8,7 +8,7 @@
 
 #include "Poller.h"
 
-Poller::Poller() {}
+KQueuePoller::KQueuePoller() {}
 
 void conn_delete(int fd) {}
 void send_msg(int fd, std::string s) {
@@ -24,12 +24,12 @@ int conn_add(int fd) {
 }
 
 void KQueuePoller::loop_forever(int local_socket) {
-    struct kevent evSet;
+    struct kevent evSetListening;
 
     int kq = kqueue();
     
-    EV_SET(&evSet, local_socket, EVFILT_READ, EV_ADD, 0, 0, NULL);
-    if (kevent(kq, &evSet, 1, NULL, 0, NULL) == -1) {
+    EV_SET(&evSetListening, local_socket, EVFILT_READ, EV_ADD, 0, 0, NULL);
+    if (kevent(kq, &evSetListening, 1, NULL, 0, NULL) == -1) {
         err(1, "kevent");
     }
 

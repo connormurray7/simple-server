@@ -3,13 +3,12 @@
 
 class Poller {
 public:
-    Poller();
-
-    virtual void loop_forever(int kq, int local_socket) = 0;
+    virtual void loop_forever(int local_socket) = 0;
 };
 
 class KQueuePoller : public Poller {
 public:
+    KQueuePoller();
     void loop_forever(int local_socket);
 };
 
