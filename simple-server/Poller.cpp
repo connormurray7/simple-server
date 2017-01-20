@@ -9,6 +9,7 @@
 #include "Poller.h"
 
 KQueuePoller::KQueuePoller() {}
+EPollPoller::EPollPoller() {}
 
 void conn_delete(int fd) {
 
@@ -76,3 +77,5 @@ void KQueuePoller::loop_forever(int local_socket) {
         }
     }
 }
+
+void EPollPoller::loop_forever(int local_socket) {}

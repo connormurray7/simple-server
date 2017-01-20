@@ -12,5 +12,4 @@ public:
 private:
     std::string local_addr;
     std::string port;
-
 };
