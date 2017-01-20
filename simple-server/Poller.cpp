@@ -10,7 +10,9 @@
 
 KQueuePoller::KQueuePoller() {}
 
-void conn_delete(int fd) {}
+void conn_delete(int fd) {
+
+}
 void send_msg(int fd, std::string s) {
     std::cout << s << std::endl;
 }

@@ -8,7 +8,12 @@
 
 #include "ListeningSocket.h"
 
-int ListeningSocket::get_local_socket(std::string& local_addr, std::string& port) {
+ListeningSocket::ListeningSocket(std::string local_addr, std::string port) {
+    this->local_addr = local_addr;
+    this->port = port;
+}
+
+int ListeningSocket::get_local_socket() {
     struct addrinfo *addr;
     struct addrinfo hints;
     

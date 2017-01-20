@@ -12,4 +12,8 @@ public:
     void loop_forever(int local_socket);
 };
 
-class EPollPoller : public Poller {};
+class EPollPoller : public Poller {
+public:
+    EPollPoller();
+    void loop_forever(int local_socket);
+};
