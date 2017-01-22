@@ -8,6 +8,8 @@
 #include "Poller.h"
 
 using std::string;
+using std::cout;
+using std::endl;
 
 void conn_delete(int fd);
 void send_msg(int fd, string s);
@@ -23,18 +25,18 @@ void KQueuePoller::loop_forever(int local_socket) {
     EV_SET(&evSetListening, local_socket, EVFILT_READ, EV_ADD, 0, 0, NULL);
     if (kevent(kq, &evSetListening, 1, NULL, 0, NULL) == -1) {
         //TODO log error
-        std::cout << "There was an error setting this up" << std::endl;
+        cout << "There was an error setting this up" << endl;
     }
 
     int nev = 0;
     while(1) {
-        std::cout << "Starting to handle requests" << std::endl;
+        cout << "Starting to handle requests" << endl;
         nev = kevent(kq, NULL, 0, evList, 32, NULL);
         if (nev < 1) {
             //TODO log error
         }
         for (int event = 0; event < nev; event++) {
-            std::cout << "handling request" << std::endl;
+            cout << "handling request" << endl;
             handle_request(event);
         }
     }
@@ -79,7 +81,7 @@ void conn_delete(int fd) {
 
 void send_msg(int fd, string s) {
     //TODO fill 
-    std::cout << s << std::endl;
+    cout << s << endl;
 }
 void recv_msg(int num) {
     //TODO fill
