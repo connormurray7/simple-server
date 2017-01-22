@@ -10,6 +10,9 @@ public:
     int get_local_socket();
 
 private:
+
+    void setup_hints(struct addrinfo& hints, struct addrinfo* addr);
+
     std::string local_addr;
     std::string port;
 };

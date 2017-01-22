@@ -8,23 +8,15 @@
 
 #include "Poller.h"
 
+void conn_delete(int fd);
+void send_msg(int fd, std::string s);
+void recv_msg(int num);
+int conn_add(int fd);
+
 KQueuePoller::KQueuePoller() {}
+
 EPollPoller::EPollPoller() {}
 
-void conn_delete(int fd) {
-
-}
-void send_msg(int fd, std::string s) {
-    std::cout << s << std::endl;
-}
-void recv_msg(int num) {
-    std::cout << "Received message" << std::endl;
-}
-
-int conn_add(int fd) {
-    std::cout << "adding connection" << std::endl;
-    return 0;
-}
 
 void KQueuePoller::loop_forever(int local_socket) {
     struct kevent evSetListening;
@@ -79,3 +71,22 @@ void KQueuePoller::loop_forever(int local_socket) {
 }
 
 void EPollPoller::loop_forever(int local_socket) {}
+
+
+
+
+void conn_delete(int fd) {
+    //TODO fill
+}
+
+void send_msg(int fd, std::string s) {
+    //TODO fill 
+}
+void recv_msg(int num) {
+    //TODO fill
+}
+
+int conn_add(int fd) {
+    //TODO
+    return 0;
+}

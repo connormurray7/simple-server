@@ -8,15 +8,17 @@
 
 #include "ListeningSocket.h"
 
+void setup_hints(struct addrinfo& hints);
+
 ListeningSocket::ListeningSocket(std::string local_addr, std::string port) {
     this->local_addr = local_addr;
     this->port = port;
 }
 
 int ListeningSocket::get_local_socket() {
-    struct addrinfo *addr;
+    struct addrinfo* addr;
     struct addrinfo hints;
-    setup_hints(hints);
+    setup_hints(hints, addr);
 
     // open a TCP socket
     int local_socket = socket(addr->ai_family, addr->ai_socktype, addr->ai_protocol);
@@ -25,7 +27,7 @@ int ListeningSocket::get_local_socket() {
     return local_socket;
 }
 
-void setup_hints(struct addrinfo& hints) {
+void ListeningSocket::setup_hints(struct addrinfo& hints, struct addrinfo* addr) {
     memset(&hints, 0, sizeof hints);
     hints.ai_family = PF_UNSPEC; //all protocols
     hints.ai_flags = AI_PASSIVE;
