@@ -57,7 +57,7 @@ void KQueuePoller::handle_request(int event) {
        socklen_t socklen = sizeof(addr);
         int fd = accept(evList[event].ident, (struct sockaddr *)&addr, &socklen);
         if (fd == -1) {
-            //TODO log ever
+            //TODO log error
         }
         if (conn_add(fd) == 0) {
             EV_SET(&evSet, fd, EVFILT_READ, EV_ADD, 0, 0, NULL);
