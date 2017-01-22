@@ -1,16 +1,14 @@
 #include <sys/event.h>
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <err.h>
 #include <netdb.h>
 #include <string>
-#include <iostream>
 
 #include "ListeningSocket.h"
 
-void setup_hints(struct addrinfo& hints);
+using std::string;
 
-ListeningSocket::ListeningSocket(std::string local_addr, std::string port) {
+ListeningSocket::ListeningSocket(string local_addr, string port) {
     this->local_addr = local_addr;
     this->port = port;
 }
@@ -18,7 +16,15 @@ ListeningSocket::ListeningSocket(std::string local_addr, std::string port) {
 int ListeningSocket::get_local_socket() {
     struct addrinfo* addr;
     struct addrinfo hints;
-    setup_hints(hints, addr);
+    
+    memset(&hints, 0, sizeof hints);
+    hints.ai_family = PF_UNSPEC; //all protocols
+    hints.ai_flags = AI_PASSIVE;
+    hints.ai_socktype = SOCK_STREAM; //tcp
+    int error = getaddrinfo(local_addr.c_str(), port.c_str(), &hints, &addr);
+    if (error) {
+        //TODO log error
+    }
 
     // open a TCP socket
     int local_socket = socket(addr->ai_family, addr->ai_socktype, addr->ai_protocol);
@@ -26,16 +32,3 @@ int ListeningSocket::get_local_socket() {
     listen(local_socket, 5);
     return local_socket;
 }
-
-void ListeningSocket::setup_hints(struct addrinfo& hints, struct addrinfo* addr) {
-    memset(&hints, 0, sizeof hints);
-    hints.ai_family = PF_UNSPEC; //all protocols
-    hints.ai_flags = AI_PASSIVE;
-    hints.ai_socktype = SOCK_STREAM; //tcp
-    int error = getaddrinfo(local_addr.c_str(), port.c_str(), &hints, &addr);
-    if (error) {
-        errx(1, "getaddrinfo failed: %s", gai_strerror(error));
-    }
-}
-    
-
