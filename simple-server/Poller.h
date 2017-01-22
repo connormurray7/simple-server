@@ -12,6 +12,9 @@ public:
     ///Main driver for the server. Blocks forever
     ///unless interrupted. 
     virtual void loop_forever(int local_socket) = 0;
+
+private:
+    virtual void handle_request(int event) = 0;
 };
 
 
@@ -26,6 +29,17 @@ public:
     ///Monitors local_socket, blocks 
     ///unless interrupted.
     void loop_forever(int local_socket);
+
+private:
+    
+    void handle_request(int event);
+
+    int kq;
+    int listening_socket;
+    struct kevent evSet;
+    struct kevent evList[32];
+    struct sockaddr_storage addr;
+    struct kevent evSetListening;
 };
 
 class EPollPoller : public Poller {
@@ -39,4 +53,8 @@ public:
     ///Monitors local_socket, blocks 
     ///unless interrupted.
     void loop_forever(int local_socket);
+
+private:
+
+    void handle_request(int event);
 };
