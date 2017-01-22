@@ -1,26 +1,29 @@
-CXX			= clang++
-SOURCES 	= $(wildcard *.cpp)
-OBJECTS		= $(SOURCES:%.cpp=%.o)
-EXECUTABLE 	= main 
+CXX		     = clang++
+DEPENDENCIES = $(wildcard ../simple-server/*.o)
+SOURCES		 = $(wildcard *.cpp)
+OBJECTS		 = $(SOURCES:%.cpp=%.o)
+EXECUTABLE	 = main
+VALGRIND	 = valgrind --leak-check=yes
+CXXFLAGS	 = -std=c++14 -stdlib=libc++ -Wall -Werror -Wextra -pedantic
 
-CXXFLAGS = -std=c++11 -Wall -Wextra -pedantic 
-#-Werror 
-release: CXXFLAGS += -O3 -DNDEBUG
+release: CXXFLAGS += -O3
 release: all
 
-debug: CXXFLAGS += -g3 -DDEBUG
+debug: CXXFLAGS += -g
 debug: clean all
 
 profile: CXXFLAGS += -pg
 profile: clean all
 
-all: $(OBJECTS)
-	 $(CXX) $(CXXFLAGS) $(OBJECTS) -o $(EXECUTABLE)
+run: all
+run:
+	chmod 755 main && ./main
 
-Poller.o: Poller.h
-ListeningSocket.o: ListeningSocket.h
+all: $(OBJECTS) 
+	 $(MAKE) -C ../simple-server/ 
+	 $(CXX) $(CXXFLAGS) $(DEPENDENCIES) $(OBJECTS) -o $(EXECUTABLE)
 
-main.o: main.cpp ../simple-server/ListeningSocket.h ../simple-server/Poller.h
+main.o: main.cpp
 
 %.o:
 	 $(CXX) $(CXXFLAGS) -c $*.cpp
@@ -28,7 +31,10 @@ main.o: main.cpp ../simple-server/ListeningSocket.h ../simple-server/Poller.h
 clean:
 	rm -f $(OBJECTS) $(EXECUTABLE)
 
-.PHONY: all release debug profile clean
- 	# disable built-in rules
-.SUFFIXES:
+valgrind: debug
+valgrind:
+	$(VALGRIND) ./$(EXECUTABLE)
 
+.PHONY: all release debug profile clean valgrind
+
+.SUFFIXES:
