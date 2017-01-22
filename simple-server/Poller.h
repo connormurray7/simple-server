@@ -1,5 +1,7 @@
 #pragma once
 
+#include <sys/event.h>
+#include <netdb.h>
 //#include <folly/MPMCQueue.h>
 
 ///Poller listens to a local socket and offloads any 
