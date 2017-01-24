@@ -1,15 +1,20 @@
+//Thanks to Eric Radman for hist post on Kqueue:
+//http://eradman.com/posts/kqueue-tcp.html
+
 #include <sys/event.h>
 #include <sys/time.h>
 #include <unistd.h>
 #include <netdb.h>
 #include <string>
 #include <iostream>
+#include <stdexcept>
 
 #include "Poller.h"
 
 using std::string;
 using std::cout;
 using std::endl;
+using std::runtime_error;
 
 void conn_delete(int fd);
 void send_msg(int fd, string s);
@@ -24,19 +29,16 @@ void KQueuePoller::loop_forever(int local_socket) {
     
     EV_SET(&event_set_listening, local_socket, EVFILT_READ, EV_ADD, 0, 0, NULL);
     if (kevent(kq, &event_set_listening, 1, NULL, 0, NULL) == -1) {
-        //TODO log error
-        cout << "There was an error setting this up" << endl;
+        throw runtime_error("Local socket reading error, fd: " + local_socket);
     }
 
     int nev = 0;
     while(1) {
-        cout << "Starting to handle requests" << endl;
         nev = kevent(kq, NULL, 0, event_list, 32, NULL);
         if (nev < 1) {
-            //TODO log error
+            throw runtime_error("kevent error");
         }
         for (int event = 0; event < nev; event++) {
-            cout << "handling request" << endl;
             handle_request(event);
         }
     }
@@ -45,13 +47,7 @@ void KQueuePoller::loop_forever(int local_socket) {
 void KQueuePoller::handle_request(int event) {
 
     if (event_list[event].flags & EV_EOF) {
-        printf("disconnect\n");
-        int fd = event_list[event].ident;
-        EV_SET(&event_set, fd, EVFILT_READ, EV_DELETE, 0, 0, NULL);
-        if (kevent(kq, &event_set, 1, NULL, 0, NULL) == -1) {
-            //TODO log error
-        }
-        conn_delete(fd);
+        close_connection(event);
     }
     else if (event_list[event].ident == listening_socket) {
        socklen_t socklen = sizeof(addr);
@@ -73,6 +69,16 @@ void KQueuePoller::handle_request(int event) {
     else if (event_list[event].flags == EVFILT_READ) {
         recv_msg(event_list[event].ident);
     }
+}
+
+void close_connection(int event) {
+    cout << "disconnect" << endl;
+    int fd = event_list[event].ident;
+    EV_SET(&event_set, fd, EVFILT_READ, EV_DELETE, 0, 0, NULL);
+    if (kevent(kq, &event_set, 1, NULL, 0, NULL) == -1) {
+        //TODO log error
+    }
+    conn_delete(fd);
 }
 
 void conn_delete(int fd) {
