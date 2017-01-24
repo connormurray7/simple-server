@@ -18,11 +18,9 @@ public:
 
     ///Opens and returns the descriptor for the socket that is being
     ///listened to. If an error occurs, the descriptor will be -1.
-    int get_local_socket();
+    int get_socket_fd();
 
 private:
-    
-    //void setup_hints(struct addrinfo* hints, struct addrinfo* addr);
     
     std::string local_addr;
     std::string port;
