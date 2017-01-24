@@ -12,13 +12,14 @@
 #include "Poller.h"
 
 using std::string;
+using std::to_string;
 using std::cout;
 using std::endl;
 using std::runtime_error;
 
 void conn_delete(int fd);
 void send_msg(int fd, string s);
-void recv_msg(int num);
+void receive_request(int num);
 int conn_add(int fd);
 
 KQueuePoller::KQueuePoller() {}
@@ -29,7 +30,7 @@ void KQueuePoller::loop_forever(int local_socket) {
     
     EV_SET(&event_set_listening, local_socket, EVFILT_READ, EV_ADD, 0, 0, NULL);
     if (kevent(kq, &event_set_listening, 1, NULL, 0, NULL) == -1) {
-        throw runtime_error("Local socket reading error, fd: " + local_socket);
+        throw runtime_error("Local socket reading error, fd: " + to_string(local_socket));
     }
 
     int nev = 0;
@@ -50,33 +51,37 @@ void KQueuePoller::handle_request(int event) {
         close_connection(event);
     }
     else if (event_list[event].ident == listening_socket) {
-       socklen_t socklen = sizeof(addr);
-        int fd = accept(event_list[event].ident, (struct sockaddr *)&addr, &socklen);
-        if (fd == -1) {
-            //TODO log error
-        }
-        if (conn_add(fd) == 0) {
-            EV_SET(&event_set, fd, EVFILT_READ, EV_ADD, 0, 0, NULL);
-            if (kevent(kq, &event_set, 1, NULL, 0, NULL) == -1) {
-                //TODO log error
-            }
-            send_msg(fd, "welcome!\n");
-        } else {
-            printf("connection refused\n");
-            close(fd);
-        }
+        add_connection(event);
     }
     else if (event_list[event].flags == EVFILT_READ) {
-        recv_msg(event_list[event].ident);
+        receive_request(event_list[event].ident);
     }
 }
 
-void close_connection(int event) {
+void KQueuePoller::add_connection(int event) {
+    socklen_t socklen = sizeof(addr);
+    int fd = accept(event_list[event].ident, (struct sockaddr *)&addr, &socklen);
+    if (fd == -1) {
+        //TODO log error
+    }
+    if (conn_add(fd) == 0) {
+        EV_SET(&event_set, fd, EVFILT_READ, EV_ADD, 0, 0, NULL);
+        if (kevent(kq, &event_set, 1, NULL, 0, NULL) == -1) {
+            //TODO log error
+        }
+        send_msg(fd, "welcome!\n");
+    } else {
+        printf("connection refused\n");
+        close(fd);
+    }
+}
+
+void KQueuePoller::close_connection(int event) {
     cout << "disconnect" << endl;
     int fd = event_list[event].ident;
     EV_SET(&event_set, fd, EVFILT_READ, EV_DELETE, 0, 0, NULL);
     if (kevent(kq, &event_set, 1, NULL, 0, NULL) == -1) {
-        //TODO log error
+        throw runtime_error("Unable to close connection");
     }
     conn_delete(fd);
 }
@@ -89,7 +94,7 @@ void send_msg(int fd, string s) {
     //TODO fill 
     cout << s << endl;
 }
-void recv_msg(int num) {
+void receive_request(int num) {
     //TODO fill
 }
 

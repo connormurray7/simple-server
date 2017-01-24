@@ -35,6 +35,8 @@ public:
 private:
     
     void handle_request(int event);
+    void add_connection(int event);
+    void close_connection(int event);
 
     int kq;
     int listening_socket;
