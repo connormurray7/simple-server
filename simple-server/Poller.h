@@ -38,10 +38,10 @@ private:
 
     int kq;
     int listening_socket;
-    struct kevent evSet;
-    struct kevent evList[32];
+    struct kevent event_set;
+    struct kevent event_list[32];
+    struct kevent event_set_listening;
     struct sockaddr_storage addr;
-    struct kevent evSetListening;
 };
 
 class EPollPoller : public Poller {

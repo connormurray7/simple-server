@@ -22,8 +22,8 @@ void KQueuePoller::loop_forever(int local_socket) {
     listening_socket = local_socket;
     kq = kqueue();
     
-    EV_SET(&evSetListening, local_socket, EVFILT_READ, EV_ADD, 0, 0, NULL);
-    if (kevent(kq, &evSetListening, 1, NULL, 0, NULL) == -1) {
+    EV_SET(&event_set_listening, local_socket, EVFILT_READ, EV_ADD, 0, 0, NULL);
+    if (kevent(kq, &event_set_listening, 1, NULL, 0, NULL) == -1) {
         //TODO log error
         cout << "There was an error setting this up" << endl;
     }
@@ -31,7 +31,7 @@ void KQueuePoller::loop_forever(int local_socket) {
     int nev = 0;
     while(1) {
         cout << "Starting to handle requests" << endl;
-        nev = kevent(kq, NULL, 0, evList, 32, NULL);
+        nev = kevent(kq, NULL, 0, event_list, 32, NULL);
         if (nev < 1) {
             //TODO log error
         }
@@ -44,24 +44,24 @@ void KQueuePoller::loop_forever(int local_socket) {
 
 void KQueuePoller::handle_request(int event) {
 
-    if (evList[event].flags & EV_EOF) {
+    if (event_list[event].flags & EV_EOF) {
         printf("disconnect\n");
-        int fd = evList[event].ident;
-        EV_SET(&evSet, fd, EVFILT_READ, EV_DELETE, 0, 0, NULL);
-        if (kevent(kq, &evSet, 1, NULL, 0, NULL) == -1) {
+        int fd = event_list[event].ident;
+        EV_SET(&event_set, fd, EVFILT_READ, EV_DELETE, 0, 0, NULL);
+        if (kevent(kq, &event_set, 1, NULL, 0, NULL) == -1) {
             //TODO log error
         }
         conn_delete(fd);
     }
-    else if (evList[event].ident == listening_socket) {
+    else if (event_list[event].ident == listening_socket) {
        socklen_t socklen = sizeof(addr);
-        int fd = accept(evList[event].ident, (struct sockaddr *)&addr, &socklen);
+        int fd = accept(event_list[event].ident, (struct sockaddr *)&addr, &socklen);
         if (fd == -1) {
             //TODO log error
         }
         if (conn_add(fd) == 0) {
-            EV_SET(&evSet, fd, EVFILT_READ, EV_ADD, 0, 0, NULL);
-            if (kevent(kq, &evSet, 1, NULL, 0, NULL) == -1) {
+            EV_SET(&event_set, fd, EVFILT_READ, EV_ADD, 0, 0, NULL);
+            if (kevent(kq, &event_set, 1, NULL, 0, NULL) == -1) {
                 //TODO log error
             }
             send_msg(fd, "welcome!\n");
@@ -70,8 +70,8 @@ void KQueuePoller::handle_request(int event) {
             close(fd);
         }
     }
-    else if (evList[event].flags == EVFILT_READ) {
-        recv_msg(evList[event].ident);
+    else if (event_list[event].flags == EVFILT_READ) {
+        recv_msg(event_list[event].ident);
     }
 }
 
