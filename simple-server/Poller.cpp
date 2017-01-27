@@ -18,7 +18,7 @@ using std::endl;
 using std::runtime_error;
 
 void conn_delete(int fd);
-void send_msg(int fd, string s);
+void send_msg(int s, char *message, ...);
 void receive_request(int num);
 int conn_add(int fd);
 
@@ -62,16 +62,16 @@ void KQueuePoller::add_connection(int event) {
     socklen_t socklen = sizeof(addr);
     int fd = accept(event_list[event].ident, (struct sockaddr *)&addr, &socklen);
     if (fd == -1) {
-        //TODO log error
+        throw runtime_error("Unable to accept new connections");
     }
     if (conn_add(fd) == 0) {
         EV_SET(&event_set, fd, EVFILT_READ, EV_ADD, 0, 0, NULL);
         if (kevent(kq, &event_set, 1, NULL, 0, NULL) == -1) {
-            //TODO log error
+            throw runtime_error("Unable to add new connections");
         }
         send_msg(fd, "welcome!\n");
     } else {
-        printf("connection refused\n");
+        cout << "Refusing connection" << endl;
         close(fd);
     }
 }
@@ -90,18 +90,33 @@ void conn_delete(int fd) {
     //TODO fill
 }
 
-void send_msg(int fd, string s) {
-    //TODO fill 
-    cout << s << endl;
+void send_msg(int s, char *message, ...) {
+    char buf[256];
+    int len;
+    
+    va_list ap;
+    va_start(ap, message);
+    len = vsnprintf(buf, sizeof(buf), message, ap);
+    va_end(ap);
+    send(s, buf, len, 0);
+
 }
+
 void receive_request(int num) {
-    //TODO fill
+    char buf[256];
+    size_t bytes_read;
+    
+    bytes_read = recv(num, buf, sizeof(buf), 0);
+    if ((int)bytes_read < 0) {
+        printf("%d bytes read\n", (int)bytes_read);
+    }
 }
 
 int conn_add(int fd) {
     //TODO
     return 0;
 }
+
 
 EPollPoller::EPollPoller() {}
 void EPollPoller::loop_forever(int local_socket) {}
