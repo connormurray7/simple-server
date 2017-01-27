@@ -18,8 +18,8 @@ using std::endl;
 using std::runtime_error;
 
 void conn_delete(int fd);
-void send_msg(int s, char *message, ...);
 void receive_request(int num);
+void send_response(int s, string msg, ...);
 int conn_add(int fd);
 
 KQueuePoller::KQueuePoller() {}
@@ -48,12 +48,15 @@ void KQueuePoller::loop_forever(int local_socket) {
 void KQueuePoller::handle_request(int event) {
 
     if (event_list[event].flags & EV_EOF) {
+        cout << "here 1" << endl;
         close_connection(event);
     }
     else if (event_list[event].ident == listening_socket) {
+        cout << "here 2" << endl;
         add_connection(event);
     }
     else if (event_list[event].flags == EVFILT_READ) {
+        cout << "here 3" << endl;
         receive_request(event_list[event].ident);
     }
 }
@@ -69,7 +72,8 @@ void KQueuePoller::add_connection(int event) {
         if (kevent(kq, &event_set, 1, NULL, 0, NULL) == -1) {
             throw runtime_error("Unable to add new connections");
         }
-        send_msg(fd, "welcome!\n");
+        receive_request(fd);
+        send_response(fd, "welcome!\n");
     } else {
         cout << "Refusing connection" << endl;
         close(fd);
@@ -86,35 +90,34 @@ void KQueuePoller::close_connection(int event) {
     conn_delete(fd);
 }
 
-void conn_delete(int fd) {
-    //TODO fill
-}
-
-void send_msg(int s, char *message, ...) {
+void send_response(int s, string msg, ...) {
     char buf[256];
     int len;
+    char* message = &msg[0u];
     
     va_list ap;
     va_start(ap, message);
     len = vsnprintf(buf, sizeof(buf), message, ap);
     va_end(ap);
     send(s, buf, len, 0);
-
 }
+
 
 void receive_request(int num) {
     char buf[256];
     size_t bytes_read;
     
-    bytes_read = recv(num, buf, sizeof(buf), 0);
-    if ((int)bytes_read < 0) {
-        printf("%d bytes read\n", (int)bytes_read);
-    }
+    recv(num, buf, sizeof(buf), 0);
+    cout << buf << endl;
 }
 
 int conn_add(int fd) {
     //TODO
     return 0;
+}
+
+void conn_delete(int fd) {
+    //TODO fill
 }
 
 
