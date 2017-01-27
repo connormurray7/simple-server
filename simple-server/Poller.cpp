@@ -91,8 +91,8 @@ void KQueuePoller::close_connection(int event) {
 }
 
 void send_response(int s, string msg, ...) {
-    char buf[256];
-    int len;
+    int len = msg.size() + 1;
+    char buf[len];
     char* message = &msg[0u];
     
     va_list ap;
@@ -105,7 +105,6 @@ void send_response(int s, string msg, ...) {
 
 void receive_request(int num) {
     char buf[256];
-    size_t bytes_read;
     
     recv(num, buf, sizeof(buf), 0);
     cout << buf << endl;
