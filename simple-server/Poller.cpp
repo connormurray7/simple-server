@@ -1,3 +1,22 @@
+#include "Poller.h"
+
+#include <string>
+#include <iostream>
+
+using std::string;
+using std::to_string;
+using std::cout;
+using std::endl;
+using std::runtime_error;
+
+#if defined(unix) || defined(__unix__) || defined(__unix)
+
+EPollPoller::EPollPoller() {}
+void EPollPoller::loop_forever(int local_socket) {}
+void EPollPoller::handle_request(int event) {}
+
+#else
+
 //Thanks to Eric Radman for hist post on Kqueue:
 //http://eradman.com/posts/kqueue-tcp.html
 
@@ -5,17 +24,6 @@
 #include <sys/time.h>
 #include <unistd.h>
 #include <netdb.h>
-#include <string>
-#include <iostream>
-#include <stdexcept>
-
-#include "Poller.h"
-
-using std::string;
-using std::to_string;
-using std::cout;
-using std::endl;
-using std::runtime_error;
 
 string receive_request(int num);
 void send_response(int s, string msg);
@@ -106,7 +114,4 @@ int conn_add(int fd) {
     return 0;
 }
 
-
-EPollPoller::EPollPoller() {}
-void EPollPoller::loop_forever(int local_socket) {}
-void EPollPoller::handle_request(int event) {}
+#endif

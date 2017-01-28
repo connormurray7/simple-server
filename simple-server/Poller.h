@@ -1,9 +1,5 @@
 #pragma once
 
-#include <sys/event.h>
-#include <netdb.h>
-//#include <folly/MPMCQueue.h>
-
 ///Poller listens to a local socket and offloads any 
 ///incoming request to a queue (a folly multi-producer, multi-
 ///consumser queue) so that each request can be dealt with
@@ -19,6 +15,31 @@ private:
     virtual void handle_request(int event) = 0;
 };
 
+
+#if defined(unix) || defined(__unix__) || defined(__unix)
+
+class EPollPoller : public Poller {
+    ///Linux implementation of a Poller.
+    ///Uses epoll(7) to queue requests.
+public:
+    
+    ///Empty Poller.
+    EPollPoller();
+    
+    ///Monitors local_socket, blocks
+    ///unless interrupted.
+    void loop_forever(int local_socket);
+    
+private:
+    
+    void handle_request(int event);
+};
+
+
+#else
+
+#include <sys/event.h>
+#include <netdb.h>
 
 ///FreeBSD implementation of a Poller.
 ///Uses kqueue(2) to queue requests.
@@ -46,19 +67,4 @@ private:
     struct sockaddr_storage addr;
 };
 
-class EPollPoller : public Poller {
-    ///Linux implementation of a Poller.
-    ///Uses epoll(7) to queue requests.
-public:
-
-    ///Empty Poller.
-    EPollPoller();
-
-    ///Monitors local_socket, blocks 
-    ///unless interrupted.
-    void loop_forever(int local_socket);
-
-private:
-
-    void handle_request(int event);
-};
+#endif
