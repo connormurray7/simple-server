@@ -48,11 +48,9 @@ void KQueuePoller::loop_forever(int local_socket) {
 void KQueuePoller::handle_request(int event) {
 
     if (event_list[event].flags & EV_EOF) {
-        cout << "here 1" << endl;
         close_connection(event);
     }
     else if (event_list[event].ident == listening_socket) {
-        cout << "here 2" << endl;
         add_connection(event);
     }
     else if (event_list[event].flags == EVFILT_READ) {
@@ -93,12 +91,8 @@ void KQueuePoller::close_connection(int event) {
 void send_response(int s, string msg, ...) {
     int len = msg.size() + 1;
     char buf[len];
-    char* message = &msg[0u];
-    
-    va_list ap;
-    va_start(ap, message);
-    len = vsnprintf(buf, sizeof(buf), message, ap);
-    va_end(ap);
+
+    msg.copy(buf, len);
     send(s, buf, len, 0);
 }
 

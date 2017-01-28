@@ -41,7 +41,7 @@ private:
     int kq;
     int listening_socket;
     struct kevent event_set;
-    struct kevent event_list[32];
+    struct kevent event_list[128];
     struct kevent event_set_listening;
     struct sockaddr_storage addr;
 };
