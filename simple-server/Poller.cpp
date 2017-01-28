@@ -18,7 +18,7 @@ using std::endl;
 using std::runtime_error;
 
 void conn_delete(int fd);
-void receive_request(int num);
+string receive_request(int num);
 void send_response(int s, string msg, ...);
 int conn_add(int fd);
 
@@ -70,8 +70,8 @@ void KQueuePoller::add_connection(int event) {
         if (kevent(kq, &event_set, 1, NULL, 0, NULL) == -1) {
             throw runtime_error("Unable to add new connections");
         }
-        receive_request(fd);
-        send_response(fd, "welcome!\n");
+        string inbound = receive_request(fd);
+        send_response(fd, inbound);
     } else {
         cout << "Refusing connection" << endl;
         close(fd);
@@ -97,11 +97,12 @@ void send_response(int s, string msg, ...) {
 }
 
 
-void receive_request(int num) {
-    char buf[256];
+string receive_request(int num) {
+    char buf[1024];
     
     recv(num, buf, sizeof(buf), 0);
     cout << buf << endl;
+    return string(buf);
 }
 
 int conn_add(int fd) {
