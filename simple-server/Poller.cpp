@@ -98,14 +98,11 @@ void send_response(int s, string msg) {
 
 string receive_request(int num) {
     char buf[4096];
-    
     recv(num, buf, sizeof(buf), 0);
-    cout << buf << endl;
     return string(buf);
 }
 
 int conn_add(int fd) {
-    //TODO
     return 0;
 }
 
