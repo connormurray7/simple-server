@@ -17,9 +17,8 @@ using std::cout;
 using std::endl;
 using std::runtime_error;
 
-void conn_delete(int fd);
 string receive_request(int num);
-void send_response(int s, string msg, ...);
+void send_response(int s, string msg);
 int conn_add(int fd);
 
 KQueuePoller::KQueuePoller() {}
@@ -85,10 +84,10 @@ void KQueuePoller::close_connection(int event) {
     if (kevent(kq, &event_set, 1, NULL, 0, NULL) == -1) {
         throw runtime_error("Unable to close connection");
     }
-    conn_delete(fd);
+    close(fd);
 }
 
-void send_response(int s, string msg, ...) {
+void send_response(int s, string msg) {
     int len = msg.size() + 1;
     char buf[len];
 
@@ -98,7 +97,7 @@ void send_response(int s, string msg, ...) {
 
 
 string receive_request(int num) {
-    char buf[1024];
+    char buf[4096];
     
     recv(num, buf, sizeof(buf), 0);
     cout << buf << endl;
@@ -108,10 +107,6 @@ string receive_request(int num) {
 int conn_add(int fd) {
     //TODO
     return 0;
-}
-
-void conn_delete(int fd) {
-    //TODO fill
 }
 
 
