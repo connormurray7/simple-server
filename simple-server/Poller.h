@@ -1,5 +1,7 @@
 #pragma once
 
+#include <netdb.h>
+
 ///Poller listens to a local socket and offloads any 
 ///incoming request to a queue (a folly multi-producer, multi-
 ///consumser queue) so that each request can be dealt with
@@ -18,9 +20,9 @@ private:
 
 #if defined(unix) || defined(__unix__) || defined(__unix)
 
+///Linux implementation of a Poller.
+///Uses epoll(7) to queue requests.
 class EPollPoller : public Poller {
-    ///Linux implementation of a Poller.
-    ///Uses epoll(7) to queue requests.
 public:
     
     ///Empty Poller.
@@ -33,16 +35,17 @@ public:
 private:
     
     void handle_request(int event);
+
+    struct sockaddr_storage addr;
 };
 
 
 #else
 
 #include <sys/event.h>
-#include <netdb.h>
 
 ///FreeBSD implementation of a Poller.
-///Uses kqueue(2) to queue requests.
+///Uses kqueue to queue requests.
 class KQueuePoller : public Poller {
 public:
 

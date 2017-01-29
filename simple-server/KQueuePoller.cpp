@@ -1,8 +1,6 @@
 //Thanks to Eric Radman for hist post on Kqueue:
 //http://eradman.com/posts/kqueue-tcp.html
 
-#pragma once
-
 #if defined(__APPLE__) || defined(__MACH__) || defined(__FreeBSD__)
 
 #include "Poller.h"
