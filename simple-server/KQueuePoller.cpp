@@ -1,29 +1,24 @@
+//Thanks to Eric Radman for hist post on Kqueue:
+//http://eradman.com/posts/kqueue-tcp.html
+
+#pragma once
+
+#if defined(__APPLE__) || defined(__MACH__) || defined(__FreeBSD__)
+
 #include "Poller.h"
 
 #include <string>
 #include <iostream>
+#include <sys/event.h>
+#include <sys/time.h>
+#include <unistd.h>
+#include <netdb.h>
 
 using std::string;
 using std::to_string;
 using std::cout;
 using std::endl;
 using std::runtime_error;
-
-#if defined(unix) || defined(__unix__) || defined(__unix)
-
-EPollPoller::EPollPoller() {}
-void EPollPoller::loop_forever(int local_socket) {}
-void EPollPoller::handle_request(int event) {}
-
-#elif defined(__APPLE__) || defined(__MACH__) || defined(__FreeBSD__)
-
-//Thanks to Eric Radman for hist post on Kqueue:
-//http://eradman.com/posts/kqueue-tcp.html
-
-#include <sys/event.h>
-#include <sys/time.h>
-#include <unistd.h>
-#include <netdb.h>
 
 string receive_request(int num);
 void send_response(int s, string msg);
