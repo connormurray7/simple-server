@@ -1,3 +1,6 @@
+///Thanks to the man page of EPoll, this
+///was relatively painfree to implement
+///http://man7.org/linux/man-pages/man7/epoll.7.html
 #if defined(unix) || defined(__unix__) || defined(__unix)
 
 #include "Poller.h"
