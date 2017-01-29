@@ -1,9 +1,5 @@
 #pragma once
 
-#include <sys/event.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netdb.h>
 #include <string>
 
 ///Handles the opening and listening of
