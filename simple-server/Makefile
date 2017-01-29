@@ -17,7 +17,8 @@ profile: clean all
 all: $(OBJECTS)
 
 ListeningSocket.o: ListeningSocket.h
-Poller.o: Poller.h
+KQueuePoller.o: Poller.h
+EPollPoller.o: Poller.h
 
 %.o:
 	 $(CXX) $(CXXFLAGS) -c $*.cpp
