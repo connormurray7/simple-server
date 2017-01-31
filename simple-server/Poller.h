@@ -2,6 +2,8 @@
 
 #include <netdb.h>
 
+#define MAX_EVENTS 128
+
 ///Poller listens to a local socket and offloads any 
 ///incoming request to a queue (a folly multi-producer, multi-
 ///consumser queue) so that each request can be dealt with
@@ -36,6 +38,8 @@ private:
     
     void handle_request(int event);
 
+    struct epoll_event ev;
+    struct epoll_event events[MAX_EVENTS];
     struct sockaddr_storage addr;
 };
 
@@ -65,7 +69,7 @@ private:
     int kq;
     int listening_socket;
     struct kevent event_set;
-    struct kevent event_list[128];
+    struct kevent event_list[MAX_EVENTS];
     struct kevent event_set_listening;
     struct sockaddr_storage addr;
 };

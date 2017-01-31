@@ -1,6 +1,7 @@
 ///Thanks to the man page of EPoll, this
 ///was relatively painfree to implement
 ///http://man7.org/linux/man-pages/man7/epoll.7.html
+
 #if defined(unix) || defined(__unix__) || defined(__unix)
 
 #include "Poller.h"
@@ -15,18 +16,13 @@ using std::cout;
 using std::endl;
 using std::runtime_error;
 
-#define MAX_EVENTS 10
 
 EPollPoller::EPollPoller() {}
 
 void EPollPoller::loop_forever(int local_socket) {
 
-    struct epoll_event ev, events[MAX_EVENTS];
     int conn_sock, nfds, epollfd;
     socklen_t addrlen = sizeof(addr);
-
-    /* Code to set up listening socket, 'listen_sock',
-      (socket(), bind(), listen()) omitted */
 
     epollfd = epoll_create1(0);
     if (epollfd == -1) {
@@ -41,7 +37,7 @@ void EPollPoller::loop_forever(int local_socket) {
        exit(EXIT_FAILURE);
     }
 
-    for (;;) {
+    while(1) {
        nfds = epoll_wait(epollfd, events, MAX_EVENTS, -1);
        if (nfds == -1) {
            perror("epoll_wait");
