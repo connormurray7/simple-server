@@ -60,8 +60,8 @@ void KQueuePoller::handle_request(int event) {
 }
 
 void KQueuePoller::add_connection(int event) {
-    socklen_t socklen = sizeof(addr);
-    int fd = accept(event_list[event].ident, (struct sockaddr *)&addr, &socklen);
+    socklen_t addrlen = sizeof(addr);
+    int fd = accept(event_list[event].ident, (struct sockaddr *)&addr, &addrlen);
     if (fd == -1) {
         throw runtime_error("Unable to accept new connections");
     }

@@ -36,7 +36,9 @@ public:
     
 private:
     
+    void add_connection(int event);
     void handle_request(int event);
+    void close_connection(int event);
 
     struct epoll_event ev;
     struct epoll_event events[MAX_EVENTS];
@@ -62,8 +64,8 @@ public:
 
 private:
     
-    void handle_request(int event);
     void add_connection(int event);
+    void handle_request(int event);
     void close_connection(int event);
 
     int kq;
