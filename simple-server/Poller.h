@@ -22,6 +22,8 @@ private:
 
 #if defined(unix) || defined(__unix__) || defined(__unix)
 
+#include <sys/epoll.h>
+
 ///Linux implementation of a Poller.
 ///Uses epoll(7) to queue requests.
 class EPollPoller : public Poller {
