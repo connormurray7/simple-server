@@ -23,22 +23,19 @@ void EPollPoller::loop_forever(int local_socket) {
     epollfd = epoll_create1(0);
 
     if (epollfd == -1) {
-       perror("epoll_create1");
-       exit(EXIT_FAILURE);
+        throw runtime_error("Could not create epoll fd");
     }
 
     ev.events = EPOLLIN;
     ev.data.fd = listening_socket;
-    if (epoll_ctl(epollfd, EPOLL_CTL_ADD, local_socket, &ev) == -1) {
-       perror("epoll_ctl: listen_sock");
-       exit(EXIT_FAILURE);
+    if (epoll_ctl(epollfd, EPOLL_CTL_ADD, listening_socket, &ev) == -1) {
+        throw runtime_error("Unable to listen for requests on local socket, ", listening_socket);
     }
 
     while(1) {
        int num_events = epoll_wait(epollfd, events, MAX_EVENTS, -1);
        if (num_events == -1) {
-           perror("epoll_wait");
-           exit(EXIT_FAILURE);
+           throw runtime_error("Error waiting for incoming request");
        }
 
        for (int event = 0; event < num_events; ++event) {
@@ -59,15 +56,13 @@ void EPollPoller::add_connection(int event) {
    socklen_t addrlen = sizeof(addr);
    int conn_sock = accept(listening_socket, (struct sockaddr *) &addr, &addrlen);
    if (conn_sock == -1) {
-       perror("accept");
-       exit(EXIT_FAILURE);
+       throw runtime_error("Unable to accept new request");
    }
    handle_request(conn_sock);
    ev.events = EPOLLIN | EPOLLET;
    ev.data.fd = conn_sock;
    if (epoll_ctl(epollfd, EPOLL_CTL_ADD, conn_sock, &ev) == -1) {
-       perror("epoll_ctl: conn_sock");
-       exit(EXIT_FAILURE);
+       throw runtime_error("Error accepting request with epoll");
    }
 }
 
