@@ -42,6 +42,8 @@ private:
     void handle_request(int event);
     void close_connection(int event);
 
+    int epollfd;
+    int listening_socket;
     struct epoll_event ev;
     struct epoll_event events[MAX_EVENTS];
     struct sockaddr_storage addr;

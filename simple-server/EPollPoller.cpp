@@ -16,41 +16,39 @@ using std::cout;
 using std::endl;
 using std::runtime_error;
 
-
 EPollPoller::EPollPoller() {}
 
 void EPollPoller::loop_forever(int local_socket) {
-
-    int conn_sock, nfds, epollfd;
-
+    listening_socket = local_socket;
     epollfd = epoll_create1(0);
+
     if (epollfd == -1) {
        perror("epoll_create1");
        exit(EXIT_FAILURE);
     }
 
     ev.events = EPOLLIN;
-    ev.data.fd = local_socket;
+    ev.data.fd = listening_socket;
     if (epoll_ctl(epollfd, EPOLL_CTL_ADD, local_socket, &ev) == -1) {
        perror("epoll_ctl: listen_sock");
        exit(EXIT_FAILURE);
     }
 
     while(1) {
-       nfds = epoll_wait(epollfd, events, MAX_EVENTS, -1);
-       if (nfds == -1) {
+       int num_events = epoll_wait(epollfd, events, MAX_EVENTS, -1);
+       if (num_events == -1) {
            perror("epoll_wait");
            exit(EXIT_FAILURE);
        }
 
-       for (int event = 0; event < num_events; ++n) {
+       for (int event = 0; event < num_events; ++event) {
            handle_request(event);
        }
     }
 }
 
 void EPollPoller::handle_request(int event) {
-   if (events[event].data.fd == local_socket) {
+   if (events[event].data.fd == listening_socket) {
        add_connection(event);
    } else {
        //do_use_fd(events[n].data.fd);
@@ -59,7 +57,7 @@ void EPollPoller::handle_request(int event) {
 
 void EPollPoller::add_connection(int event) {
    socklen_t addrlen = sizeof(addr);
-   conn_sock = accept(local_socket, (struct sockaddr *) &addr, &addrlen);
+   int conn_sock = accept(listening_socket, (struct sockaddr *) &addr, &addrlen);
    if (conn_sock == -1) {
        perror("accept");
        exit(EXIT_FAILURE);
@@ -72,5 +70,7 @@ void EPollPoller::add_connection(int event) {
        exit(EXIT_FAILURE);
    }
 }
+
+void EPollPoller::close_connection(int event){}
 
 #endif
