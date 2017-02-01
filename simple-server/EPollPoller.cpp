@@ -58,14 +58,32 @@ void EPollPoller::add_connection(int event) {
    if (conn_sock == -1) {
        throw runtime_error("Unable to accept new request");
    }
-   handle_request(conn_sock);
+   string request = receive_request(conn_sock);
    ev.events = EPOLLIN | EPOLLET;
    ev.data.fd = conn_sock;
    if (epoll_ctl(epollfd, EPOLL_CTL_ADD, conn_sock, &ev) == -1) {
        throw runtime_error("Error accepting request with epoll");
    }
+    send_response(conn_sock, request);
 }
 
 void EPollPoller::close_connection(int event){}
+
+
+void send_response(int s, string msg) {
+    int len = msg.size() + 1;
+    char buf[len];
+    
+    msg.copy(buf, len);
+    send(s, buf, len, 0);
+}
+
+
+string receive_request(int num) {
+    char buf[4096];
+    recv(num, buf, sizeof(buf), 0);
+    return string(buf);
+}
+
 
 #endif
