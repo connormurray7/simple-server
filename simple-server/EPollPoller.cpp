@@ -59,6 +59,7 @@ void EPollPoller::add_connection(int event) {
        throw runtime_error("Unable to accept new request");
    }
    string request = receive_request(conn_sock);
+   cout << "received: " << request << endl;
    ev.events = EPOLLIN | EPOLLET;
    ev.data.fd = conn_sock;
    if (epoll_ctl(epollfd, EPOLL_CTL_ADD, conn_sock, &ev) == -1) {
