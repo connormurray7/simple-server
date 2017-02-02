@@ -7,22 +7,25 @@
 
 #include <string>
 #include <iostream>
-#include <sys/event.h>
-#include <sys/time.h>
-#include <unistd.h>
 #include <netdb.h>
+#include <unistd.h>
+#include <sys/time.h>
+#include <sys/event.h>
+#include <folly/MPMCQueue.h>
 
 using std::string;
 using std::to_string;
 using std::cout;
 using std::endl;
 using std::runtime_error;
+using folly::MPMCQueue;
 
 string receive_request(int num);
 void send_response(int s, string msg);
 int conn_add(int fd);
 
-KQueuePoller::KQueuePoller() {}
+KQueuePoller::KQueuePoller(MPMCQueue<std::string>* queue)
+    : Poller(queue) {}
 
 void KQueuePoller::loop_forever(int local_socket) {
     listening_socket = local_socket;

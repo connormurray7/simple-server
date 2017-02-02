@@ -9,17 +9,20 @@
 #include <string>
 #include <iostream>
 #include <sys/epoll.h>
+#include <folly/MPMCQueue.h>
 
 using std::string;
 using std::to_string;
 using std::cout;
 using std::endl;
 using std::runtime_error;
+using folly::MPMCQueue;
 
 void send_response(int s, string msg);
 string receive_request(int num);
 
-EPollPoller::EPollPoller() {}
+EPollPoller::EPollPoller(MPMCQueue<std::string>* queue)
+    : Poller(queue) {}
 
 void EPollPoller::loop_forever(int local_socket) {
     listening_socket = local_socket;

@@ -13,8 +13,8 @@
 class Poller {
 public:
 
-    Poller(MPMCQueue<std::string>& queue) {
-        q = queue;
+    Poller(folly::MPMCQueue<std::string>* q) {
+        queue = q;
     }
 
     ///Main driver for the server. Blocks forever
@@ -25,7 +25,7 @@ private:
 
     virtual void handle_request(int event) = 0;
     
-    MPMCQueue<std::string> q;
+    folly::MPMCQueue<std::string>* queue;
 };
 
 
@@ -39,7 +39,7 @@ class EPollPoller : public Poller {
 public:
     
     ///Empty Poller.
-    EPollPoller(MPMCQueue<std::string>& queue);
+    EPollPoller(folly::MPMCQueue<std::string>* queue);
     
     ///Monitors local_socket, blocks
     ///unless interrupted.
@@ -69,7 +69,7 @@ class KQueuePoller : public Poller {
 public:
 
     ///Empty Poller.
-    KQueuePoller(MPMCQueue<std::string>& queue);
+    KQueuePoller(folly::MPMCQueue<std::string>* queue);
 
     ///Monitors local_socket, blocks 
     ///unless interrupted.
