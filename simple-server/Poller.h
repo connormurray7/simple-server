@@ -1,6 +1,8 @@
 #pragma once
 
 #include <netdb.h>
+#include <string>
+#include <folly/MPMCQueue.h>
 
 #define MAX_EVENTS 128
 
@@ -11,12 +13,19 @@
 class Poller {
 public:
 
+    Poller(MPMCQueue<std::string>& queue) {
+        q = queue;
+    }
+
     ///Main driver for the server. Blocks forever
     ///unless interrupted. 
     virtual void loop_forever(int local_socket) = 0;
 
 private:
+
     virtual void handle_request(int event) = 0;
+    
+    MPMCQueue<std::string> q;
 };
 
 
@@ -30,7 +39,7 @@ class EPollPoller : public Poller {
 public:
     
     ///Empty Poller.
-    EPollPoller();
+    EPollPoller(MPMCQueue<std::string>& queue);
     
     ///Monitors local_socket, blocks
     ///unless interrupted.
@@ -60,7 +69,7 @@ class KQueuePoller : public Poller {
 public:
 
     ///Empty Poller.
-    KQueuePoller();
+    KQueuePoller(MPMCQueue<std::string>& queue);
 
     ///Monitors local_socket, blocks 
     ///unless interrupted.
