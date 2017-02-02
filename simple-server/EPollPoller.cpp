@@ -16,6 +16,9 @@ using std::cout;
 using std::endl;
 using std::runtime_error;
 
+void send_response(int s, string msg);
+string receive_request(int num);
+
 EPollPoller::EPollPoller() {}
 
 void EPollPoller::loop_forever(int local_socket) {
@@ -29,7 +32,7 @@ void EPollPoller::loop_forever(int local_socket) {
     ev.events = EPOLLIN;
     ev.data.fd = listening_socket;
     if (epoll_ctl(epollfd, EPOLL_CTL_ADD, listening_socket, &ev) == -1) {
-        throw runtime_error("Unable to listen for requests on local socket, ", listening_socket);
+        throw runtime_error("Unable to listen for requests on local socket");
     }
 
     while(1) {
