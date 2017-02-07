@@ -2,6 +2,7 @@
 
 #include <netdb.h>
 #include <string>
+#include <memory>
 #include <folly/MPMCQueue.h>
 
 #define MAX_EVENTS 128
@@ -13,7 +14,7 @@
 class Poller {
 public:
 
-    Poller(folly::MPMCQueue<std::string>* q) {
+    Poller(std::shared_ptr<folly::MPMCQueue<std::string>> q) {
         queue = q;
     }
 
@@ -21,11 +22,12 @@ public:
     ///unless interrupted. 
     virtual void loop_forever(int local_socket) = 0;
 
+    std::shared_ptr<folly::MPMCQueue<std::string>> queue;
+
 private:
 
     virtual void handle_request(int event) = 0;
     
-    folly::MPMCQueue<std::string>* queue;
 };
 
 
@@ -39,7 +41,7 @@ class EPollPoller : public Poller {
 public:
     
     ///Empty Poller.
-    EPollPoller(folly::MPMCQueue<std::string>* queue);
+    EPollPoller(std::shared_ptr<folly::MPMCQueue<std::string>> queue);
     
     ///Monitors local_socket, blocks
     ///unless interrupted.
@@ -69,7 +71,7 @@ class KQueuePoller : public Poller {
 public:
 
     ///Empty Poller.
-    KQueuePoller(folly::MPMCQueue<std::string>* queue);
+    KQueuePoller(std::shared_ptr<folly::MPMCQueue<std::string>> queue);
 
     ///Monitors local_socket, blocks 
     ///unless interrupted.

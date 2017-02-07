@@ -3,7 +3,8 @@ SOURCES		= $(wildcard *.cpp)
 OBJECTS		= $(SOURCES:%.cpp=%.o)
 EXECUTABLE	= main
 VALGRIND	= valgrind --leak-check=yes
-CXXFLAGS	= -std=c++14 -stdlib=libc++ -Wall -Wextra -pedantic
+CXXFLAGS	= -std=c++14 -stdlib=libc++ -Wall -Wextra -pedantic -llzma -lz -lsnappy -llz4 -levent -ldouble-conversion -lssl -lgflags -lglog -lboost_system -lfolly
+
 #-Werror 
 release: CXXFLAGS += -O3
 release: all

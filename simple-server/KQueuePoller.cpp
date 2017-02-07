@@ -15,6 +15,7 @@
 
 using std::string;
 using std::to_string;
+using std::shared_ptr;
 using std::cout;
 using std::endl;
 using std::runtime_error;
@@ -24,7 +25,7 @@ string receive_request(int num);
 void send_response(int s, string msg);
 int conn_add(int fd);
 
-KQueuePoller::KQueuePoller(MPMCQueue<std::string>* queue)
+KQueuePoller::KQueuePoller(shared_ptr<MPMCQueue<string>> queue)
     : Poller(queue) {}
 
 void KQueuePoller::loop_forever(int local_socket) {
@@ -57,8 +58,8 @@ void KQueuePoller::handle_request(int event) {
         add_connection(event);
     }
     else if (event_list[event].flags == EVFILT_READ) {
-        cout << "here 3" << endl;
-        receive_request(event_list[event].ident);
+        //This is for long polling..
+        //receive_request(event_list[event].ident);
     }
 }
 
@@ -74,7 +75,8 @@ void KQueuePoller::add_connection(int event) {
             throw runtime_error("Unable to add new connections");
         }
         string inbound = receive_request(fd);
-        send_response(fd, inbound);
+        queue->blockingWrite(std::forward<string>(inbound));
+        //send_response(fd, inbound);
     } else {
         cout << "Refusing connection" << endl;
         close(fd);
