@@ -11,21 +11,18 @@ using std::string;
 using std::cout;
 using std::endl;
 using std::make_shared;
-
-void checkLoop(std::shared_ptr<folly::MPMCQueue<string>> queue) {
-    string r;
-    while(true) {
-        queue->blockingRead(r);
-    }
-}
+using folly::MPMCQueue;
 
 int main() {
     
     ListeningSocket socket("127.0.0.1", "8080");
     int local_socket = socket.get_socket_fd();
 
-    auto queue = make_shared<folly::MPMCQueue<string>>(1024);
-    auto t = std::thread(checkLoop, queue);
+    auto queue = make_shared<MPMCQueue<string>>(1024);
+    auto handler = RequestHandler();
+    auto dequeuer = Dequeuer(queue, handler);
+
+    auto t = std::thread(dequeuer.run);
     
     KQueuePoller poller(queue);
     poller.loop_forever(local_socket);

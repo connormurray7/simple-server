@@ -12,5 +12,7 @@ public:
             RequestHandler& handler);
 
 private:
+    std::shared_ptr<folly::MPMCQueue<string>> queue;
+    RequestHandler handler;
 
 }
