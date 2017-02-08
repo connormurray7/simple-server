@@ -13,11 +13,16 @@ using std::endl;
 using std::make_shared;
 
 void checkLoop(std::shared_ptr<folly::MPMCQueue<string>> queue) {
+    cout << "Thread was created " << endl;
     string r;
     while(true) {
         queue->blockingRead(r);
         cout << "Got this: [" << r << "]" << endl;
     }
+}
+
+void printThis(string s) {
+    cout << s << endl;
 }
 
 
@@ -27,12 +32,11 @@ int main() {
     int local_socket = socket.get_socket_fd();
 
     auto queue = make_shared<folly::MPMCQueue<string>>(1024);
-
-    std::thread(checkLoop, queue);
+    auto t = std::thread(checkLoop, queue);
     
     KQueuePoller poller(queue);
     poller.loop_forever(local_socket);
-    
+   
     return 0;
 }
 
