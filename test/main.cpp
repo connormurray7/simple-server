@@ -13,18 +13,11 @@ using std::endl;
 using std::make_shared;
 
 void checkLoop(std::shared_ptr<folly::MPMCQueue<string>> queue) {
-    cout << "Thread was created " << endl;
     string r;
     while(true) {
         queue->blockingRead(r);
-        cout << "Got this: [" << r << "]" << endl;
     }
 }
-
-void printThis(string s) {
-    cout << s << endl;
-}
-
 
 int main() {
     
