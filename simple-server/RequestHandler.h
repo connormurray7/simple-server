@@ -5,8 +5,8 @@ public:
 
     RequestHandler();
 
-    void 
+    void handle();
 
 private:
 
-}
+};

@@ -1,8 +1,13 @@
-#include <string>
 #include <memory>
+#include <vector>
+#include <string>
+#include <folly/MPMCQueue.h>
 
 #include "Dequeuer.h"
 
+using std::string;
+using std::vector;
+using std::thread;
 using std::shared_ptr;
 using folly::MPMCQueue;
 
@@ -15,13 +20,13 @@ Dequeuer::Dequeuer(shared_ptr<MPMCQueue<string>> queue,
     workers = vector<thread>(num_threads, thread());
 }
 
-Dequeuer::begin() {
+void Dequeuer::begin() {
     for(auto& worker: workers) {
         worker = thread(run);
     }
 }
 
-Dequeuer::run() {
+void Dequeuer::run() {
     string r;
     while(true) {
         queue->blockingRead(r);
