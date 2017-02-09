@@ -20,6 +20,7 @@ all: $(OBJECTS)
 ListeningSocket.o: ListeningSocket.h
 KQueuePoller.o: Poller.h
 EPollPoller.o: Poller.h
+Dequeuer.o: Dequeuer.h
 
 %.o:
 	 $(CXX) $(CXXFLAGS) -c $*.cpp
