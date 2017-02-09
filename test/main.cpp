@@ -20,7 +20,7 @@ int main() {
 
     auto queue = make_shared<MPMCQueue<string>>(1024);
     auto handler = RequestHandler();
-    auto dequeuer = Dequeuer(queue, handler);
+    auto dequeuer = Dequeuer(queue, handler, 1);
 
     auto t = std::thread(dequeuer.run);
     

@@ -6,8 +6,20 @@
 using std::shared_ptr;
 using folly::MPMCQueue;
 
-Dequeuer::Dequeuer(shared_ptr<MPMCQueue<string>> queue, RequestHandler& handler) 
-    : queue(queue), handler(handler) {}
+Dequeuer::Dequeuer(shared_ptr<MPMCQueue<string>> queue, 
+        RequestHandler& req_handler,
+        int num_threads) 
+{
+    task_queue = queue;
+    handler = handler;
+    workers = vector<thread>(num_threads, thread());
+}
+
+Dequeuer::begin() {
+    for(auto& worker: workers) {
+        worker = thread(run);
+    }
+}
 
 Dequeuer::run() {
     string r;
