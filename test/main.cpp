@@ -24,7 +24,7 @@ int main() {
     auto handler = RequestHandler();
     auto dequeuer = Dequeuer(queue, handler, 1);
 
-    auto t = std::thread(dequeuer.run);
+    auto t = std::thread(&Dequeuer::begin, &dequeuer);
     
     KQueuePoller poller(queue);
     poller.loop_forever(local_socket);
