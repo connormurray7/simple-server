@@ -19,6 +19,7 @@ public:
 
 private:
 
+    int num_threads;
     std::shared_ptr<folly::MPMCQueue<std::string>> task_queue;
     RequestHandler handler;
     std::vector<std::thread> workers;

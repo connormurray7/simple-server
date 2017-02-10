@@ -6,6 +6,8 @@
 
 #include "../simple-server/ListeningSocket.h"
 #include "../simple-server/Poller.h"
+#include "../simple-server/RequestHandler.h"
+#include "../simple-server/Dequeuer.h"
 
 using std::string;
 using std::cout;
