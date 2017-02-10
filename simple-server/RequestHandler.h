@@ -1,11 +1,13 @@
 #pragma once
 
+#include <string>
+
 class RequestHandler {
 public:
 
     RequestHandler();
 
-    void handle();
+    void handle(std::string request);
 
 private:
 
