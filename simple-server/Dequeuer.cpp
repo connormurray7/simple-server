@@ -20,7 +20,7 @@ void run(shared_ptr<MPMCQueue<string>> task_queue, RequestHandler& handler) {
 }
 
 Dequeuer::Dequeuer(shared_ptr<MPMCQueue<string>> queue, 
-        RequestHandler req_handler,
+        shared_ptr<RequestHandler> req_handler,
         int num_threads_in)
 {
     task_queue = queue;
