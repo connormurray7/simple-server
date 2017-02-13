@@ -5,9 +5,7 @@
 class RequestHandler {
 public:
 
-    RequestHandler();
-
-    void handle(std::string request);
+    virtual void handle(std::string request) = 0;
 
 private:
 
