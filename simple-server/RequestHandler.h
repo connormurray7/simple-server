@@ -14,11 +14,11 @@ struct Request {
 class RequestHandler {
 public:
     
-    RequestHandler();
+    RequestHandler() {}
     
-    ~RequestHandler();
+    ~RequestHandler() {}
 
-    virtual void handle(std::string request) = 0;
+    virtual void handle(std::string& request) = 0;
 
 private:
 
