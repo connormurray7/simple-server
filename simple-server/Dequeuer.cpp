@@ -11,11 +11,11 @@ using std::thread;
 using std::shared_ptr;
 using folly::MPMCQueue;
 
-void run(shared_ptr<MPMCQueue<string>> task_queue, RequestHandler& handler) {
+void run(shared_ptr<MPMCQueue<string>> task_queue, shared_ptr<RequestHandler> handler) {
     string r;
     while(true) {
         task_queue->blockingRead(r);
-        handler.handle(r);
+        handler->handle(r);
     }
 }
 
@@ -24,7 +24,7 @@ Dequeuer::Dequeuer(shared_ptr<MPMCQueue<string>> queue,
         int num_threads_in)
 {
     task_queue = queue;
-    handler = handler;
+    handler = req_handler;
     num_threads = num_threads_in;
 }
 

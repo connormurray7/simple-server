@@ -8,6 +8,6 @@ class EchoHandler : public RequestHandler {
 public:
 
     void handle(std::string& request) {
-
+        //TODO Implement the handler.
     }
 };
