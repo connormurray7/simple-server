@@ -11,7 +11,7 @@
 class Dequeuer {
 public:
 
-    Dequeuer(std::shared_ptr<folly::MPMCQueue<std::string>> queue,
+    Dequeuer(std::shared_ptr<folly::MPMCQueue<Request>> queue,
              std::shared_ptr<RequestHandler> handler,
             int num_threads);
 
@@ -20,7 +20,7 @@ public:
 private:
 
     int num_threads;
-    std::shared_ptr<folly::MPMCQueue<std::string>> task_queue;
+    std::shared_ptr<folly::MPMCQueue<Request>> task_queue;
     std::shared_ptr<RequestHandler> handler;
     std::vector<std::thread> workers;
 

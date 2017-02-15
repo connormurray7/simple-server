@@ -4,6 +4,7 @@
 #if defined(__APPLE__) || defined(__MACH__) || defined(__FreeBSD__)
 
 #include "Poller.h"
+#include "RequestHandler.h"
 
 #include <string>
 #include <iostream>
@@ -21,11 +22,11 @@ using std::endl;
 using std::runtime_error;
 using folly::MPMCQueue;
 
-string receive_request(int num);
+Request receive_request(int num);
 void send_response(int s, string msg);
 int conn_add(int fd);
 
-KQueuePoller::KQueuePoller(shared_ptr<MPMCQueue<string>> queue)
+KQueuePoller::KQueuePoller(shared_ptr<MPMCQueue<Request>> queue)
     : Poller(queue) {}
 
 void KQueuePoller::loop_forever(int local_socket) {
@@ -58,7 +59,6 @@ void KQueuePoller::handle_request(int event) {
         add_connection(event);
     }
     else if (event_list[event].flags == EVFILT_READ) {
-        //This is for long polling..
         //receive_request(event_list[event].ident);
     }
 }
@@ -74,8 +74,8 @@ void KQueuePoller::add_connection(int event) {
         if (kevent(kq, &event_set, 1, NULL, 0, NULL) == -1) {
             throw runtime_error("Unable to add new connections");
         }
-        string inbound = receive_request(fd);
-        queue->blockingWrite(std::forward<string>(inbound));
+        Request inbound = receive_request(fd);
+        queue->blockingWrite(std::forward<Request>(inbound));
         //send_response(fd, inbound);
     } else {
         cout << "Refusing connection" << endl;
@@ -102,10 +102,11 @@ void send_response(int s, string msg) {
 }
 
 
-string receive_request(int num) {
+Request receive_request(int fd) {
     char buf[4096];
-    recv(num, buf, sizeof(buf), 0);
-    return string(buf);
+    recv(fd, buf, sizeof(buf), 0);
+    Request req(fd, string(buf));
+    return req;
 }
 
 int conn_add(int fd) {

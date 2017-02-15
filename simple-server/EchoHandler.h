@@ -7,7 +7,9 @@
 class EchoHandler : public RequestHandler {
 public:
 
-    void handle(std::string& request) {
+    Response handle(Request& request) {
         //TODO Implement the handler.
+        Response response(request.fd, request.request);
+        return response;
     }
 };

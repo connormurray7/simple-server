@@ -17,11 +17,11 @@ void run(shared_ptr<MPMCQueue<Request>> task_queue, shared_ptr<RequestHandler> h
     while(true) {
         task_queue->blockingRead(request);
         response = handler->handle(request);
-        
+        //write response back
     }
 }
 
-Dequeuer::Dequeuer(shared_ptr<MPMCQueue<string>> queue, 
+Dequeuer::Dequeuer(shared_ptr<MPMCQueue<Request>> queue,
         shared_ptr<RequestHandler> req_handler,
         int num_threads_in)
 {

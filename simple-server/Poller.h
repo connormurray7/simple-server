@@ -5,6 +5,8 @@
 #include <memory>
 #include <folly/MPMCQueue.h>
 
+#include "RequestHandler.h"
+
 #define MAX_EVENTS 128
 
 ///Poller listens to a local socket and offloads any 
@@ -14,7 +16,7 @@
 class Poller {
 public:
 
-    Poller(std::shared_ptr<folly::MPMCQueue<std::string>> q) {
+    Poller(std::shared_ptr<folly::MPMCQueue<Request>> q) {
         queue = q;
     }
 
@@ -22,7 +24,7 @@ public:
     ///unless interrupted. 
     virtual void loop_forever(int local_socket) = 0;
 
-    std::shared_ptr<folly::MPMCQueue<std::string>> queue;
+    std::shared_ptr<folly::MPMCQueue<Request>> queue;
 
 private:
 
@@ -41,7 +43,7 @@ class EPollPoller : public Poller {
 public:
     
     ///Empty Poller.
-    EPollPoller(std::shared_ptr<folly::MPMCQueue<std::string>> queue);
+    EPollPoller(std::shared_ptr<folly::MPMCQueue<Request>> queue);
     
     ///Monitors local_socket, blocks
     ///unless interrupted.
@@ -71,7 +73,7 @@ class KQueuePoller : public Poller {
 public:
 
     ///Empty Poller.
-    KQueuePoller(std::shared_ptr<folly::MPMCQueue<std::string>> queue);
+    KQueuePoller(std::shared_ptr<folly::MPMCQueue<Request>> queue);
 
     ///Monitors local_socket, blocks 
     ///unless interrupted.

@@ -21,7 +21,7 @@ int main() {
     ListeningSocket socket("127.0.0.1", "8080");
     int local_socket = socket.get_socket_fd();
 
-    auto queue = make_shared<MPMCQueue<string>>(1024);
+    auto queue = make_shared<MPMCQueue<Request>>(1024);
     auto handler = std::shared_ptr<RequestHandler>(new EchoHandler());
     auto dequeuer = Dequeuer(queue, handler, 1);
 
