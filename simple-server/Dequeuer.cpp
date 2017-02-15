@@ -11,11 +11,13 @@ using std::thread;
 using std::shared_ptr;
 using folly::MPMCQueue;
 
-void run(shared_ptr<MPMCQueue<string>> task_queue, shared_ptr<RequestHandler> handler) {
-    string r;
+void run(shared_ptr<MPMCQueue<Request>> task_queue, shared_ptr<RequestHandler> handler) {
+    Request request;
+    Response response;
     while(true) {
-        task_queue->blockingRead(r);
-        handler->handle(r);
+        task_queue->blockingRead(request);
+        response = handler->handle(request);
+        
     }
 }
 
