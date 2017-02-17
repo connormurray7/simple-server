@@ -76,7 +76,6 @@ void KQueuePoller::add_connection(int event) {
         }
         Request inbound = receive_request(fd);
         queue->blockingWrite(std::forward<Request>(inbound));
-        //send_response(fd, inbound);
     } else {
         cout << "Refusing connection" << endl;
         close(fd);

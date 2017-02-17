@@ -4,12 +4,13 @@
 
 #if defined(unix) || defined(__unix__) || defined(__unix)
 
-#include "Poller.h"
-
 #include <string>
 #include <iostream>
 #include <sys/epoll.h>
 #include <folly/MPMCQueue.h>
+
+#include "Request.h"
+#include "Poller.h"
 
 using std::string;
 using std::to_string;
@@ -54,41 +55,35 @@ void EPollPoller::handle_request(int event) {
    if (events[event].data.fd == listening_socket) {
        add_connection(event);
    } else {
-       //do_use_fd(events[n].data.fd);
+       //TODO add other options
    }
 }
 
 void EPollPoller::add_connection(int event) {
-   socklen_t addrlen = sizeof(addr);
-   int conn_sock = accept(listening_socket, (struct sockaddr *) &addr, &addrlen);
-   if (conn_sock == -1) {
+    socklen_t addrlen = sizeof(addr);
+    int conn_sock = accept(listening_socket, (struct sockaddr *) &addr, &addrlen);
+    if (conn_sock == -1) {
        throw runtime_error("Unable to accept new request");
-   }
-   string request = receive_request(conn_sock);
-   ev.events = EPOLLIN | EPOLLET;
-   ev.data.fd = conn_sock;
-   if (epoll_ctl(epollfd, EPOLL_CTL_ADD, conn_sock, &ev) == -1) {
+    }
+
+    ev.events = EPOLLIN | EPOLLET;
+    ev.data.fd = conn_sock;
+    if (epoll_ctl(epollfd, EPOLL_CTL_ADD, conn_sock, &ev) == -1) {
        throw runtime_error("Error accepting request with epoll");
-   }
-    send_response(conn_sock, request);
+    }
+
+    Request inbound = receive_request(conn_sock);
+    queue->blockingWrite(std::forward<Request>(inbound));
 }
 
 void EPollPoller::close_connection(int event){}
 
 
-void send_response(int s, string msg) {
-    int len = msg.size() + 1;
-    char buf[len];
-    
-    msg.copy(buf, len);
-    send(s, buf, len, 0);
-}
-
-
-string receive_request(int num) {
+Request receive_request(int fd) {
     char buf[4096];
-    recv(num, buf, sizeof(buf), 0);
-    return string(buf);
+    recv(fd, buf, sizeof(buf), 0);
+    Request req(fd, string(buf));
+    return req;
 }
 
 
