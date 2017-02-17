@@ -8,8 +8,7 @@ class EchoHandler : public RequestHandler {
 public:
 
     Response handle(Request& request) {
-        //TODO Implement the handler.
-        Response response(request.fd, request.request);
+        Response response(request.fd, request.msg);
         return response;
     }
 };

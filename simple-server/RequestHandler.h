@@ -6,22 +6,22 @@ struct Request {
     
     Request() {}
     
-    Request(int fd_in, std::string request_in)
-        : fd(fd_in), request(request_in) {}
+    Request(int fd_in, std::string msg_in)
+        : fd(fd_in), msg(msg_in) {}
     
     int fd;
-    std::string request;
+    std::string msg;
 };
 
 struct Response {
     
     Response() {}
     
-    Response(int fd_in, std::string response_in)
-    : fd(fd_in), response(response_in) {}
+    Response(int fd_in, std::string msg_in)
+    : fd(fd_in), msg(msg_in) {}
     
     int fd;
-    std::string response;
+    std::string msg;
 };
 
 class RequestHandler {

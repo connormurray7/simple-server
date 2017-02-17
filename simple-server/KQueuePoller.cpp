@@ -93,14 +93,6 @@ void KQueuePoller::close_connection(int event) {
     close(fd);
 }
 
-void send_response(int s, string msg) {
-    int len = msg.size() + 1;
-    char buf[len];
-
-    msg.copy(buf, len);
-    send(s, buf, len, 0);
-}
-
 
 Request receive_request(int fd) {
     char buf[4096];
