@@ -56,6 +56,7 @@ void EPollPoller::handle_request(int event) {
        add_connection(event);
    } else {
        //TODO add other options
+       close_connection(event);
    }
 }
 
@@ -76,14 +77,8 @@ void EPollPoller::add_connection(int event) {
     queue->blockingWrite(std::forward<Request>(inbound));
 }
 
-void EPollPoller::close_connection(int event){}
-
-
-Request receive_request(int fd) {
-    char buf[4096];
-    recv(fd, buf, sizeof(buf), 0);
-    Request req(fd, string(buf));
-    return req;
+void EPollPoller::close_connection(int fd){
+    close(fd);
 }
 
 
