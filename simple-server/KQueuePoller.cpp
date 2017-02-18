@@ -4,7 +4,7 @@
 #if defined(__APPLE__) || defined(__MACH__) || defined(__FreeBSD__)
 
 #include "Poller.h"
-#include "RequestHandler.h"
+#include "Request.h"
 
 #include <string>
 #include <iostream>
@@ -90,14 +90,6 @@ void KQueuePoller::close_connection(int event) {
         throw runtime_error("Unable to close connection");
     }
     close(fd);
-}
-
-
-Request receive_request(int fd) {
-    char buf[4096];
-    recv(fd, buf, sizeof(buf), 0);
-    Request req(fd, string(buf));
-    return req;
 }
 
 int conn_add(int fd) {

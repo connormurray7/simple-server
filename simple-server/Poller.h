@@ -7,7 +7,8 @@
 
 #include "RequestHandler.h"
 
-#define MAX_EVENTS 128
+#define MAX_EVENTS 1024
+#define BUFFER_SIZE 4096
 
 ///Poller listens to a local socket and offloads any 
 ///incoming request to a queue (a folly multi-producer, multi-
@@ -25,11 +26,17 @@ public:
     virtual void loop_forever(int local_socket) = 0;
 
     std::shared_ptr<folly::MPMCQueue<Request>> queue;
+    
+    Request receive_request(int fd) {
+        char buf[BUFFER_SIZE];
+        recv(fd, buf, sizeof(buf), 0);
+        Request req(fd, std::string(buf));
+        return req;
+    }
 
 private:
 
     virtual void handle_request(int event) = 0;
-    
 };
 
 
