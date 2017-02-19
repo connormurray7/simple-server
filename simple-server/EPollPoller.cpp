@@ -6,6 +6,7 @@
 
 #include <string>
 #include <iostream>
+#include <memory>
 #include <sys/epoll.h>
 #include <folly/MPMCQueue.h>
 
@@ -17,12 +18,10 @@ using std::to_string;
 using std::cout;
 using std::endl;
 using std::runtime_error;
+using std::shared_ptr;
 using folly::MPMCQueue;
 
-void send_response(int s, string msg);
-string receive_request(int num);
-
-EPollPoller::EPollPoller(MPMCQueue<std::string>* queue)
+EPollPoller::EPollPoller(shared_ptr<MPMCQueue<Request>> queue)
     : Poller(queue) {}
 
 void EPollPoller::loop_forever(int local_socket) {
