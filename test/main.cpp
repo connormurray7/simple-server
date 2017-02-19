@@ -9,6 +9,7 @@
 #include "../simple-server/RequestHandler.h"
 #include "../simple-server/EchoHandler.h"
 #include "../simple-server/Dequeuer.h"
+#include "../simple-server/Request.h"
 
 using std::string;
 using std::cout;
@@ -27,7 +28,7 @@ int main() {
 
     auto t = std::thread(&Dequeuer::begin, &dequeuer);
     
-    KQueuePoller poller(queue);
+    EPollPoller poller(queue);
     poller.loop_forever(local_socket);
    
     return 0;
