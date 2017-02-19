@@ -22,8 +22,8 @@ using std::endl;
 using std::runtime_error;
 using folly::MPMCQueue;
 
-Request receive_request(int num);
-void send_response(int s, string msg);
+//Request receive_request(int num);
+//void send_response(int s, string msg);
 int conn_add(int fd);
 
 KQueuePoller::KQueuePoller(shared_ptr<MPMCQueue<Request>> queue)

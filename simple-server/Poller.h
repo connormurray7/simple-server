@@ -25,8 +25,12 @@ public:
     ///unless interrupted. 
     virtual void loop_forever(int local_socket) = 0;
 
+    ///Facebook's Folly Multi-Producer Multi-Consumer queue
+    ///Allows the Poller to accept requests immediately
+    //and place them on the queue for a threadpool to process.
     std::shared_ptr<folly::MPMCQueue<Request>> queue;
     
+    ///Default method to receive request. Returns request object.
     Request receive_request(int fd) {
         char buf[BUFFER_SIZE];
         recv(fd, buf, sizeof(buf), 0);

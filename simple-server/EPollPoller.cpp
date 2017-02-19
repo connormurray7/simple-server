@@ -19,8 +19,8 @@ using std::endl;
 using std::runtime_error;
 using folly::MPMCQueue;
 
-void send_response(int s, string msg);
-string receive_request(int num);
+//void send_response(int s, string msg);
+//string receive_request(int num);
 
 EPollPoller::EPollPoller(MPMCQueue<std::string>* queue)
     : Poller(queue) {}
