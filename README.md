@@ -1,6 +1,6 @@
 ### _Introduction_
 
-_Note: still a WIP_ 
+_Note: still a WIP_   
 The goal of this project is to create a simple and approachable asynchronous rest web server. At the lowest level it will make use of **epoll** on Linux based systems, and **kqueue** on FreeBSB based systems. As this is a learning experience for me, I make no commitments for performance.
 
 
