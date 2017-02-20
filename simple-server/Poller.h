@@ -20,15 +20,6 @@ public:
     Poller(std::shared_ptr<folly::MPMCQueue<Request>> q) {
         queue = q;
     }
-
-    ///Main driver for the server. Blocks forever
-    ///unless interrupted. 
-    virtual void loop_forever(int local_socket) = 0;
-
-    ///Facebook's Folly Multi-Producer Multi-Consumer queue
-    ///Allows the Poller to accept requests immediately
-    //and place them on the queue for a threadpool to process.
-    std::shared_ptr<folly::MPMCQueue<Request>> queue;
     
     ///Default method to receive request. Returns request object.
     Request receive_request(int fd) {
@@ -37,6 +28,15 @@ public:
         Request req(fd, std::string(buf));
         return req;
     }
+    
+    ///Main driver for the server. Blocks forever
+    ///unless interrupted.
+    virtual void loop_forever(int local_socket) = 0;
+    
+    ///Facebook's Folly Multi-Producer Multi-Consumer queue
+    ///Allows the Poller to accept requests immediately
+    //and place them on the queue for a threadpool to process.
+    std::shared_ptr<folly::MPMCQueue<Request>> queue;
 
 private:
 
