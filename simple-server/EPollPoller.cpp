@@ -26,20 +26,20 @@ EPollPoller::EPollPoller(shared_ptr<MPMCQueue<Request>> queue)
 
 void EPollPoller::loop_forever(int local_socket) {
     listening_socket = local_socket;
-    epollfd = epoll_create1(0);
+    fd = epoll_create1(0);
 
-    if (epollfd == -1) {
+    if (fd == -1) {
         throw runtime_error("Could not create epoll fd");
     }
 
     ev.events = EPOLLIN;
     ev.data.fd = listening_socket;
-    if (epoll_ctl(epollfd, EPOLL_CTL_ADD, listening_socket, &ev) == -1) {
+    if (epoll_ctl(fd, EPOLL_CTL_ADD, listening_socket, &ev) == -1) {
         throw runtime_error("Unable to listen for requests on local socket");
     }
 
     while(1) {
-       int num_events = epoll_wait(epollfd, events, MAX_EVENTS, -1);
+       int num_events = epoll_wait(fd, events, MAX_EVENTS, -1);
        if (num_events == -1) {
            throw runtime_error("Error waiting for incoming request");
        }
@@ -68,7 +68,7 @@ void EPollPoller::add_connection(int event) {
 
     ev.events = EPOLLIN | EPOLLET;
     ev.data.fd = conn_sock;
-    if (epoll_ctl(epollfd, EPOLL_CTL_ADD, conn_sock, &ev) == -1) {
+    if (epoll_ctl(fd, EPOLL_CTL_ADD, conn_sock, &ev) == -1) {
        throw runtime_error("Error accepting request with epoll");
     }
 
