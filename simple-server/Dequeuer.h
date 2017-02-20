@@ -8,6 +8,10 @@
 
 #include "RequestHandler.h"
 
+///Contains a threadpool that handles
+///requests off of the queue. Each thread
+///writes make response. Folly MPMC queue
+///is thread safe for multiple consumers.
 class Dequeuer {
 public:
 
