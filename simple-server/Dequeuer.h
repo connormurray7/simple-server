@@ -14,11 +14,16 @@
 ///is thread safe for multiple consumers.
 class Dequeuer {
 public:
-
+    
+    ///Takes a folly MPMC queue, a handler that inherits from
+    ///RequestHandler and a number of threads.
     Dequeuer(std::shared_ptr<folly::MPMCQueue<Request>> queue,
              std::shared_ptr<RequestHandler> handler,
             int num_threads);
 
+    ///Non-blocking call that kicks off each of the threads
+    ///which will block on the MPMC queue waiting to service
+    ///a request.
     void begin();
 
 private:
