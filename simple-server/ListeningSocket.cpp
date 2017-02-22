@@ -24,10 +24,9 @@ int ListeningSocket::get_socket_fd() {
     setup_hints(&hints);
     int error = getaddrinfo(local_addr.c_str(), port.c_str(), &hints, &addr);
     if (error) {
-        //TODO log error
+        throw runtime_error("Unable to listen to socket: " + local_addr + ":" + port);
     }
     
-    // open a TCP socket
     int local_socket = socket(addr->ai_family, addr->ai_socktype, addr->ai_protocol);
     bind(local_socket, addr->ai_addr, addr->ai_addrlen);
     listen(local_socket, 5);
@@ -35,9 +34,9 @@ int ListeningSocket::get_socket_fd() {
 }
 
 void setup_hints(struct addrinfo* hints) {
-    hints->ai_family = PF_UNSPEC; //all protocols
+    hints->ai_family = PF_UNSPEC;
     hints->ai_flags = AI_PASSIVE;
-    hints->ai_socktype = SOCK_STREAM; //tcp
+    hints->ai_socktype = SOCK_STREAM;
 }
 
 
