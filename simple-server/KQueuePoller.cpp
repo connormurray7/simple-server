@@ -22,8 +22,6 @@ using std::endl;
 using std::runtime_error;
 using folly::MPMCQueue;
 
-//Request receive_request(int num);
-//void send_response(int s, string msg);
 int conn_add(int fd);
 
 KQueuePoller::KQueuePoller(shared_ptr<MPMCQueue<Request>> queue)
@@ -59,7 +57,7 @@ void KQueuePoller::handle_request(int event) {
         add_connection(event);
     }
     else if (event_list[event].flags == EVFILT_READ) {
-        //receive_request(event_list[event].ident);
+        receive_request(event_list[event].ident);
     }
 }
 
@@ -83,7 +81,6 @@ void KQueuePoller::add_connection(int event) {
 }
 
 void KQueuePoller::close_connection(int event) {
-    cout << "disconnect" << endl;
     int fd = event_list[event].ident;
     EV_SET(&event_set, fd, EVFILT_READ, EV_DELETE, 0, 0, NULL);
     if (kevent(kq, &event_set, 1, NULL, 0, NULL) == -1) {

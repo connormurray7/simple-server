@@ -28,7 +28,6 @@ void run(shared_ptr<MPMCQueue<Request>> task_queue, shared_ptr<RequestHandler> h
         task_queue->blockingRead(request);
         response = handler->handle(request);
         send_response(response);
-        //write response back
     }
 }
 
