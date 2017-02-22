@@ -63,6 +63,8 @@ void EPollPoller::handle_request(int event) {
    } else if (events[event].data.fd == listening_socket) {
        add_connection(event);
    } else {
+       receive_request(events[event].data.fd); 
+   }
 }
 
 void EPollPoller::add_connection(int event) {
