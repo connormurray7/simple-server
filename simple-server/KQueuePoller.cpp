@@ -67,17 +67,12 @@ void KQueuePoller::add_connection(int event) {
     if (fd == -1) {
         throw runtime_error("Unable to accept new connections");
     }
-    if (conn_add(fd) == 0) {
-        EV_SET(&event_set, fd, EVFILT_READ, EV_ADD, 0, 0, NULL);
-        if (kevent(kq, &event_set, 1, NULL, 0, NULL) == -1) {
-            throw runtime_error("Unable to add new connections");
-        }
-        Request inbound = receive_request(fd);
-        queue->blockingWrite(std::forward<Request>(inbound));
-    } else {
-        cout << "Refusing connection" << endl;
-        close(fd);
+    EV_SET(&event_set, fd, EVFILT_READ, EV_ADD, 0, 0, NULL);
+    if (kevent(kq, &event_set, 1, NULL, 0, NULL) == -1) {
+        throw runtime_error("Unable to add new connections");
     }
+    Request inbound = receive_request(fd);
+    queue->blockingWrite(std::forward<Request>(inbound));
 }
 
 void KQueuePoller::close_connection(int event) {
@@ -87,10 +82,6 @@ void KQueuePoller::close_connection(int event) {
         throw runtime_error("Unable to close connection");
     }
     close(fd);
-}
-
-int conn_add(int fd) {
-    return 0;
 }
 
 #endif

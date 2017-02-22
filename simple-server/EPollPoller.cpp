@@ -1,6 +1,8 @@
 ///Thanks to the man page of EPoll, this
 ///was relatively painfree to implement
 ///http://man7.org/linux/man-pages/man7/epoll.7.html
+///also this blog for some minor things:
+///https://banu.com/blog/2/how-to-use-epoll-a-complete-example-in-c/
 
 #if defined(unix) || defined(__unix__) || defined(__unix)
 
@@ -20,6 +22,11 @@ using std::endl;
 using std::runtime_error;
 using std::shared_ptr;
 using folly::MPMCQueue;
+
+bool incomingError(struct epoll_event event) {
+    auto ev = event.events;
+    return (ev & EPOLLERR) || (ev & EPOLLHUP) || !(ev & EPOLLIN);
+}
 
 EPollPoller::EPollPoller(shared_ptr<MPMCQueue<Request>> queue)
     : Poller(queue) {}
@@ -51,12 +58,11 @@ void EPollPoller::loop_forever(int local_socket) {
 }
 
 void EPollPoller::handle_request(int event) {
-   if (events[event].data.fd == listening_socket) {
+   if(incomingError(events[event])) {
+       close_connection(event);
+   } else if (events[event].data.fd == listening_socket) {
        add_connection(event);
    } else {
-       //TODO add other options
-       close_connection(event);
-   }
 }
 
 void EPollPoller::add_connection(int event) {
