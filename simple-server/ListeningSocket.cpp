@@ -1,6 +1,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netdb.h>
+
 #include <cstring>
 #include <string>
 #include <iostream>
@@ -8,6 +9,7 @@
 #include "ListeningSocket.h"
 
 using std::string;
+using std::runtime_error;
 
 void setup_hints(struct addrinfo* hints);
 
@@ -37,7 +39,4 @@ void setup_hints(struct addrinfo* hints) {
     hints->ai_family = PF_UNSPEC;
     hints->ai_flags = AI_PASSIVE;
     hints->ai_socktype = SOCK_STREAM;
-}
-
-
-
+} 
