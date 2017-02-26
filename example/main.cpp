@@ -4,10 +4,10 @@
 #include <thread>
 #include <folly/MPMCQueue.h>
 
+#include "EchoHandler.h"
 #include "../simple-server/ListeningSocket.h"
 #include "../simple-server/Poller.h"
 #include "../simple-server/RequestHandler.h"
-#include "../simple-server/EchoHandler.h"
 #include "../simple-server/Dequeuer.h"
 #include "../simple-server/Request.h"
 
@@ -28,7 +28,7 @@ int main() {
 
     auto t = std::thread(&Dequeuer::begin, &dequeuer);
     
-    EPollPoller poller(queue);
+    KQueuePoller poller(queue);
     poller.loop_forever(local_socket);
    
     return 0;
