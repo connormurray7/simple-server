@@ -1,8 +1,9 @@
 #pragma once
 
+#include <string>
+
 #include "../simple-server/RequestHandler.h"
 
-#include <string>
 
 class EchoHandler : public RequestHandler {
 public:
