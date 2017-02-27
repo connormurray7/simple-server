@@ -11,7 +11,6 @@
 class RequestHandler {
 public:
 
-
     virtual Response handle(Request& request) = 0;
 
 private:

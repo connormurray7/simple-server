@@ -1,10 +1,9 @@
-CXX		     = g++
-DEPENDENCIES = $(wildcard ../simple-server/*.o)
-SOURCES		 = $(wildcard *.cpp)
-OBJECTS		 = $(SOURCES:%.cpp=%.o)
-EXECUTABLE	 = main
-VALGRIND	 = valgrind --leak-check=yes
-CXXFLAGS	 = -std=c++14 -Wall -Wextra -pedantic -llzma -lz -lsnappy -llz4 -levent -ldouble-conversion -lssl -lgflags -lglog -lboost_system -lfolly
+CXX		    = clang++
+SOURCES		= $(wildcard *.cpp)
+OBJECTS		= $(SOURCES:%.cpp=%.o)
+EXECUTABLE	= main
+VALGRIND	= valgrind --leak-check=yes
+CXXFLAGS	= -std=c++14 -stdlib=libc++ -Wall -Werror -Wextra -pedantic
 
 release: CXXFLAGS += -O3
 release: all
@@ -19,9 +18,10 @@ run: all
 run:
 	chmod 755 main && ./main
 
-all: $(OBJECTS) 
-	 $(MAKE) -C ../simple-server/ 
-	 $(CXX) $(CXXFLAGS) $(DEPENDENCIES) $(OBJECTS) -o $(EXECUTABLE)
+all: $(OBJECTS)
+	 $(CXX) $(CXXFLAGS) $(OBJECTS) -o $(EXECUTABLE)
+
+test_server.o: test_server.cpp
 
 main.o: main.cpp
 
