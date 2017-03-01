@@ -4,6 +4,7 @@ OBJECTS		= $(SOURCES:%.cpp=%.o)
 EXECUTABLE	= main
 VALGRIND	= valgrind --leak-check=yes
 CXXFLAGS	= -std=c++14 -stdlib=libc++ -Wall -Werror -Wextra -pedantic
+LINKERFLAGS  = -llzma -lz -lsnappy -llz4 -levent -ldouble-conversion -lssl -lgflags -lglog -lboost_system -lfolly
 
 release: CXXFLAGS += -O3
 release: all
@@ -19,9 +20,10 @@ run:
 	chmod 755 main && ./main
 
 all: $(OBJECTS)
-	 $(CXX) $(CXXFLAGS) $(OBJECTS) -o $(EXECUTABLE)
+	 $(CXX) $(CXXFLAGS) $(LINKERFLAGS) $(DEPENDENCIES) $(OBJECTS) -o $(EXECUTABLE)
 
 test_server.o: test_server.cpp
+test_socket.o: test_socket.cpp
 
 main.o: main.cpp
 
@@ -31,10 +33,6 @@ main.o: main.cpp
 clean:
 	rm -f $(OBJECTS) $(EXECUTABLE)
 
-valgrind: debug
-valgrind:
-	$(VALGRIND) ./$(EXECUTABLE)
-
-.PHONY: all release debug profile clean valgrind
+.PHONY: all release debug profile clean
 
 .SUFFIXES:
