@@ -17,5 +17,7 @@ TEST_CASE("Can create multiple sockets", "[Socket]") {
     ListeningSocket socket2("127.0.0.1", "8080");
     int fd2 = socket2.get_socket_fd();
     cout << "Created socket with fd: " << fd2 << endl;
+
+    REQUIRE(fd != fd2);
 }
 
