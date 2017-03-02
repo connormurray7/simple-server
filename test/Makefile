@@ -5,6 +5,7 @@ EXECUTABLE	= main
 VALGRIND	= valgrind --leak-check=yes
 CXXFLAGS	= -std=c++14 -stdlib=libc++ -Wall -Werror -Wextra -pedantic
 LINKERFLAGS  = -llzma -lz -lsnappy -llz4 -levent -ldouble-conversion -lssl -lgflags -lglog -lboost_system -lfolly
+DEPENDENCIES = ../simple-server/*.o
 
 release: CXXFLAGS += -O3
 release: all
@@ -19,7 +20,7 @@ run: all
 run:
 	chmod 755 main && ./main
 
-all: $(OBJECTS)
+all: $(OBJECTS) $(DEPENDENCIES)
 	 $(CXX) $(CXXFLAGS) $(LINKERFLAGS) $(DEPENDENCIES) $(OBJECTS) -o $(EXECUTABLE)
 
 test_server.o: test_server.cpp

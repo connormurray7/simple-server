@@ -8,6 +8,7 @@ using std::string;
 using std::cout;
 using std::endl;
 
+
 TEST_CASE("Can create multiple sockets", "[Socket]") {
 
     ListeningSocket socket("127.0.0.1", "8080");
