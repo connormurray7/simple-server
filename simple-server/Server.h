@@ -51,7 +51,7 @@ void Server<T>::run() {
     auto handler = std::shared_ptr<T>(new T());
     auto dequeuer = Dequeuer(queue, handler, num_threads);
 
-    auto t = std::thread(&Dequeuer::begin, &dequeuer);
+    dequeuer.begin();
     
     KQueuePoller poller(queue);
     poller.loop_forever(local_socket);
