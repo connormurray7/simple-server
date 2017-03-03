@@ -9,7 +9,7 @@ using std::cout;
 using std::endl;
 
 
-TEST_CASE("Can create multiple sockets", "[Socket]") {
+TEST_CASE("Can create multiple sockets on same port", "[Socket]") {
 
     ListeningSocket socket("127.0.0.1", "8080");
     int fd = socket.get_socket_fd();
