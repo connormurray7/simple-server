@@ -21,23 +21,21 @@ public:
     TestRequestHandler() {}
 
     Response handle(Request& request) {
-        cout << "Handling request " << requestsHandled++ << endl;
+        cout << "Handling request " << request.msg << endl;
         return Response(request.fd, "");
     }
-    
-    int requestsHandled = 0;
 };
 
 TEST_CASE("Dequeuer handles requests on queue", "[Server]") {
     auto queue = std::make_shared<folly::MPMCQueue<Request>>(1024);
 
     for(int i = 0; i < 10; ++i) {
-        Request request(0, "request 0");
+        Request request(i, "request " + std::to_string(i));
         queue->blockingWrite(std::forward<Request>(request));
     }
 
     auto handler = shared_ptr<TestRequestHandler>(new TestRequestHandler());
-    auto dequeuer = Dequeuer(queue, handler, 1);
+    Dequeuer dequeuer(queue, handler, 1);
 
     dequeuer.begin();
 

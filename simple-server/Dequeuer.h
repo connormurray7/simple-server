@@ -19,7 +19,12 @@ public:
     ///RequestHandler and a number of threads.
     Dequeuer(std::shared_ptr<folly::MPMCQueue<Request>> queue,
              std::shared_ptr<RequestHandler> handler,
-            int num_threads);
+             int num_threads);
+    
+    Dequeuer(const Dequeuer&) = delete;
+    
+    ///Flips running boolean to false so the threads will exit.
+    ~Dequeuer();
 
     ///Non-blocking call that kicks off each of the threads
     ///which will block on the MPMC queue waiting to service
@@ -33,5 +38,4 @@ private:
     std::shared_ptr<RequestHandler> handler;
     std::shared_ptr<std::atomic<bool>> running;
     std::vector<std::thread> workers;
-
 };
