@@ -1,6 +1,8 @@
 #include <string>
 #include <iostream>
 #include <memory>
+#include <thread>
+#include <chrono>
 #include <folly/MPMCQueue.h>
 
 #include "../simple-server/Request.h"
@@ -9,8 +11,6 @@
 #include "../simple-server/Dequeuer.h"
 #include "catch.hpp"
 
-using std::cout;
-using std::endl;
 using std::string;
 using std::shared_ptr;
 using std::make_shared;
@@ -21,7 +21,6 @@ public:
     TestRequestHandler() {}
 
     Response handle(Request& request) {
-        cout << "Handling request " << request.msg << endl;
         return Response(request.fd, "");
     }
 };
@@ -38,5 +37,5 @@ TEST_CASE("Dequeuer handles requests on queue", "[Server]") {
     Dequeuer dequeuer(queue, handler, 1);
 
     dequeuer.begin();
-
+    REQUIRE(queue->isEmpty() <= 0); 
 }
