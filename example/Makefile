@@ -1,11 +1,11 @@
-CXX		     = g++
-DEPENDENCIES = $(wildcard ../simple-server/*.o)
-SOURCES		 = $(wildcard *.cpp)
-OBJECTS		 = $(SOURCES:%.cpp=%.o)
-EXECUTABLE	 = main
-VALGRIND	 = valgrind --leak-check=yes
-CXXFLAGS	 = -std=c++14 -Wall -Wextra -pedantic
-LINKERFLAGS  = -llzma -lz -lsnappy -llz4 -levent -ldouble-conversion -lssl -lgflags -lglog -lboost_system -lfolly
+CXX            = g++
+DEPENDENCIES   = $(wildcard ../simple-server/*.o)
+SOURCES        = $(wildcard *.cpp)
+OBJECTS        = $(SOURCES:%.cpp=%.o)
+EXECUTABLE     = main
+VALGRIND       = valgrind --leak-check=yes
+CXXFLAGS       = -std=c++14 -Wall -Wextra -pedantic
+LINKERFLAGS    = -llzma -lz -lsnappy -llz4 -levent -ldouble-conversion -lssl -lgflags -lglog -lboost_system -lfolly
 
 release: CXXFLAGS += -O3
 release: all

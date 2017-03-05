@@ -1,9 +1,9 @@
-CXX		    = g++
-SOURCES		= $(wildcard *.cpp)
-OBJECTS		= $(SOURCES:%.cpp=%.o)
-EXECUTABLE	= main
-VALGRIND	= valgrind --leak-check=yes
-CXXFLAGS	= -std=c++14 -Wall -Wextra -pedantic
+CXX        = g++
+SOURCES    = $(wildcard *.cpp)
+OBJECTS    = $(SOURCES:%.cpp=%.o)
+EXECUTABLE = main
+VALGRIND   = valgrind --leak-check=yes
+CXXFLAGS   = -std=c++14 -Wall -Wextra -pedantic
 
 release: CXXFLAGS += -O3
 release: all
