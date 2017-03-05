@@ -31,6 +31,7 @@ private:
     int num_threads;
     std::shared_ptr<folly::MPMCQueue<Request>> task_queue;
     std::shared_ptr<RequestHandler> handler;
+    std::shared_ptr<std::atomic<bool>> running;
     std::vector<std::thread> workers;
 
 };

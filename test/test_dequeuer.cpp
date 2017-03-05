@@ -40,5 +40,5 @@ TEST_CASE("Dequeuer handles requests on queue", "[Server]") {
     auto dequeuer = Dequeuer(queue, handler, 1);
 
     dequeuer.begin();
-    cout << "This returns" <<endl;
+
 }
