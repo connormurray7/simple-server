@@ -50,7 +50,7 @@ void Server<T>::run() {
 
     auto queue = std::make_shared<folly::MPMCQueue<Request>>(1024);
     auto handler = std::shared_ptr<T>(new T());
-    auto dequeuer = Dequeuer(queue, handler, num_threads);
+    Dequeuer dequeuer(queue, handler, num_threads);
 
     dequeuer.begin();
     
@@ -67,7 +67,7 @@ void Server<T>::run() {
 
     auto queue = std::make_shared<folly::MPMCQueue<Request>>(1024);
     auto handler = std::shared_ptr<T>(new T());
-    auto dequeuer = Dequeuer(queue, handler, num_threads);
+    Dequeuer dequeuer(queue, handler, num_threads);
 
     dequeuer.begin();
     
