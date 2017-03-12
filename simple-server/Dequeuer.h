@@ -21,6 +21,7 @@ public:
              std::shared_ptr<RequestHandler> handler,
              int num_threads);
     
+    ///Avoid copying.
     Dequeuer(const Dequeuer&) = delete;
     
     ///Flips running boolean to false so the threads will exit.

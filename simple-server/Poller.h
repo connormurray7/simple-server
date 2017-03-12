@@ -20,6 +20,7 @@ public:
 
     Poller(std::shared_ptr<folly::MPMCQueue<Request>> q) {
         queue = q;
+        running.exchange(true);
     }
     
     ///Default method to receive request. Returns request object.
@@ -42,6 +43,7 @@ public:
 private:
 
     virtual void handle_request(int event) = 0;
+    std::atomic<bool> running;
 };
 
 
