@@ -18,21 +18,19 @@
 class Poller {
 public:
 
-    Poller(std::shared_ptr<folly::MPMCQueue<Request>> q) {
-        queue = q;
-        running.exchange(true);
-    }
+    Poller(std::shared_ptr<folly::MPMCQueue<Request>> q);
 
+    //Virtual destrutor, no cleanup necessary at Poller level
     virtual ~Poller() {};
+
+    //Factory method implemented in blocks below to determine which
+    //type of poller to return.
+    static std::unique_ptr<Poller> create_poller(
+            std::shared_ptr<folly::MPMCQueue<Request>> q);
     
     ///Default method to receive request. Returns request object.
-    Request receive_request(int fd) {
-        char buf[BUFFER_SIZE];
-        recv(fd, buf, sizeof(buf), 0);
-        Request req(fd, std::string(buf));
-        return req;
-    }
-    
+    Request receive_request(int fd);    
+
     ///Main driver for the server. Blocks forever
     ///unless interrupted.
     virtual void loop_forever(int local_socket) = 0;
@@ -47,7 +45,6 @@ private:
     virtual void handle_request(int event) = 0;
     std::atomic<bool> running;
 };
-
 
 #if defined(unix) || defined(__unix__) || defined(__unix)
 
@@ -81,6 +78,9 @@ private:
     struct sockaddr_storage addr;
 };
 
+std::unique_ptr<Poller> Poller::create_poller(std::shared_ptr<folly::MPMCQueue<Request>> q) {
+    return std::make_unique<EPollPoller>(q);
+}
 
 #else
 
@@ -115,4 +115,22 @@ private:
     struct sockaddr_storage addr;
 };
 
+std::unique_ptr<Poller> Poller::create_poller(std::shared_ptr<folly::MPMCQueue<Request>> q) {
+    return std::make_unique<KQueuePoller>(q);
+}
+
 #endif
+
+Poller::Poller(std::shared_ptr<folly::MPMCQueue<Request>> q) {
+    queue = q;
+    running.exchange(true);
+}
+
+Request Poller::receive_request(int fd) {
+    char buf[BUFFER_SIZE];
+    recv(fd, buf, sizeof(buf), 0);
+    Request req(fd, std::string(buf));
+    return req;
+}
+
+

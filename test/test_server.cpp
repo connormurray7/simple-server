@@ -21,5 +21,5 @@ public:
 
 TEST_CASE("Server starts fine on local addr", "[Server]") {
     Server<TestRequestHandler> server("127.0.0.1", "8080", 1);
-    //server.run();
+    //server.run(); //Blocking call
 }
