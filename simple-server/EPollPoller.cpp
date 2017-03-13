@@ -23,13 +23,10 @@ using std::runtime_error;
 using std::shared_ptr;
 using folly::MPMCQueue;
 
-bool incomingError(struct epoll_event event) {
-    auto ev = event.events;
-    return (ev & EPOLLERR) || (ev & EPOLLHUP) || !(ev & EPOLLIN);
-}
-
 EPollPoller::EPollPoller(shared_ptr<MPMCQueue<Request>> queue)
     : Poller(queue) {}
+
+EPollPoller::~EPollPoller() {}
 
 void EPollPoller::loop_forever(int local_socket) {
     listening_socket = local_socket;
@@ -55,6 +52,11 @@ void EPollPoller::loop_forever(int local_socket) {
            handle_request(event);
        }
     }
+}
+
+bool incomingError(struct epoll_event event) {
+    auto ev = event.events;
+    return (ev & EPOLLERR) || (ev & EPOLLHUP) || !(ev & EPOLLIN);
 }
 
 void EPollPoller::handle_request(int event) {

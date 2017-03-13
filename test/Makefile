@@ -26,6 +26,7 @@ all: $(OBJECTS) $(DEPENDENCIES)
 test_server.o: test_server.cpp
 test_socket.o: test_socket.cpp
 test_dequeuer.o: test_dequeuer.cpp
+test_poller.o: test_poller.cpp
 
 main.o: main.cpp
 

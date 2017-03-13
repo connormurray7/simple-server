@@ -23,7 +23,7 @@ public:
         running.exchange(true);
     }
 
-    virtual ~Poller();
+    virtual ~Poller() {};
     
     ///Default method to receive request. Returns request object.
     Request receive_request(int fd) {

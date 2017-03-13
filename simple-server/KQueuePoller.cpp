@@ -27,6 +27,8 @@ int conn_add(int fd);
 KQueuePoller::KQueuePoller(shared_ptr<MPMCQueue<Request>> queue)
     : Poller(queue) {}
 
+KQueuePoller::~KQueuePoller() {}
+
 void KQueuePoller::loop_forever(int local_socket) {
     listening_socket = local_socket;
     kq = kqueue();
