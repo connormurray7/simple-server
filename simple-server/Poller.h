@@ -22,6 +22,8 @@ public:
         queue = q;
         running.exchange(true);
     }
+
+    virtual ~Poller();
     
     ///Default method to receive request. Returns request object.
     Request receive_request(int fd) {
@@ -58,6 +60,9 @@ public:
     
     ///Empty Poller.
     EPollPoller(std::shared_ptr<folly::MPMCQueue<Request>> queue);
+
+    //Nothing to cleanup, exists for factory creation.
+    ~EPollerPoller();
     
     ///Monitors local_socket, blocks
     ///unless interrupted.
@@ -88,6 +93,9 @@ public:
 
     ///Empty Poller.
     KQueuePoller(std::shared_ptr<folly::MPMCQueue<Request>> queue);
+
+    //Nothing to cleanup, exists for factory creation.
+    ~KQueuePoller();
 
     ///Monitors local_socket, blocks 
     ///unless interrupted.
