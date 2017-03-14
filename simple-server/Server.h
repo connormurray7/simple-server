@@ -41,8 +41,6 @@ private:
     int num_threads;
 };
 
-#if defined(unix) || defined(__unix__) || defined(__unix)
-
 template<typename T>
 void Server<T>::run() {
     ListeningSocket socket(address, port);
@@ -54,25 +52,6 @@ void Server<T>::run() {
 
     dequeuer.begin();
     
-    EPollPoller poller(queue);
-    poller.loop_forever(local_socket);
+    std::unique_ptr<Poller> poller = Poller::create_poller(queue);
+    poller->loop_forever(local_socket);
 }
-
-#else
-
-template<typename T>
-void Server<T>::run() {
-    ListeningSocket socket(address, port);
-    int local_socket = socket.get_socket_fd();
-
-    auto queue = std::make_shared<folly::MPMCQueue<Request>>(1024);
-    auto handler = std::shared_ptr<T>(new T());
-    Dequeuer dequeuer(queue, handler, num_threads);
-
-    dequeuer.begin();
-    
-    KQueuePoller poller(queue);
-    poller.loop_forever(local_socket);
-}
-
-#endif
