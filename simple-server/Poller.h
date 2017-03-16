@@ -22,11 +22,6 @@ public:
 
     //Virtual destrutor, no cleanup necessary at Poller level
     virtual ~Poller() {};
-
-    //Factory method implemented in blocks below to determine which
-    //type of poller to return.
-    static std::unique_ptr<Poller> create_poller(
-            std::shared_ptr<folly::MPMCQueue<Request>> q);
     
     ///Default method to receive request. Returns request object.
     Request receive_request(int fd);    
@@ -78,10 +73,6 @@ private:
     struct sockaddr_storage addr;
 };
 
-std::unique_ptr<Poller> Poller::create_poller(std::shared_ptr<folly::MPMCQueue<Request>> q) {
-    return std::make_unique<EPollPoller>(q);
-}
-
 #else
 
 #include <sys/event.h>
@@ -115,9 +106,6 @@ private:
     struct sockaddr_storage addr;
 };
 
-std::unique_ptr<Poller> Poller::create_poller(std::shared_ptr<folly::MPMCQueue<Request>> q) {
-    return std::make_unique<KQueuePoller>(q);
-}
 
 #endif
 
@@ -132,5 +120,3 @@ Request Poller::receive_request(int fd) {
     Request req(fd, std::string(buf));
     return req;
 }
-
-
