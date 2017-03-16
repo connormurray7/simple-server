@@ -5,6 +5,7 @@
 
 #include "catch.hpp"
 #include "../simple-server/Poller.h"
+#include "../simple-server/Server.h"
 #include "../simple-server/Request.h"
 #include "../simple-server/ListeningSocket.h"
 
@@ -20,8 +21,7 @@ TEST_CASE("Poller starts and stops without exception", "[Poller]") {
     int fd = socket.get_socket_fd();
 
     auto queue = std::make_shared<folly::MPMCQueue<Request>>(1024);
-    unique_ptr<Poller> poller = Poller::create_poller(queue);
+    unique_ptr<Poller> poller = construct_poller(queue);
 
     poller->loop_forever(fd);
 }
-
