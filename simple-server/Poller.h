@@ -18,13 +18,22 @@
 class Poller {
 public:
 
-    Poller(std::shared_ptr<folly::MPMCQueue<Request>> q);
+    ///Default constructor, take MPMC queue.
+    Poller(std::shared_ptr<folly::MPMCQueue<Request>> q) {
+        queue = q;
+        running.exchange(true);
+    }
 
     //Virtual destrutor, no cleanup necessary at Poller level
     virtual ~Poller() {};
     
     ///Default method to receive request. Returns request object.
-    Request receive_request(int fd);    
+    Request receive_request(int fd) {
+        char buf[BUFFER_SIZE];
+        recv(fd, buf, sizeof(buf), 0);
+        Request req(fd, std::string(buf));
+        return req;
+    }
 
     ///Main driver for the server. Blocks forever
     ///unless interrupted.
@@ -40,6 +49,7 @@ private:
     virtual void handle_request(int event) = 0;
     std::atomic<bool> running;
 };
+
 
 #if defined(unix) || defined(__unix__) || defined(__unix)
 
@@ -105,18 +115,4 @@ private:
     struct kevent event_set_listening;
     struct sockaddr_storage addr;
 };
-
-
 #endif
-
-Poller::Poller(std::shared_ptr<folly::MPMCQueue<Request>> q) {
-    queue = q;
-    running.exchange(true);
-}
-
-Request Poller::receive_request(int fd) {
-    char buf[BUFFER_SIZE];
-    recv(fd, buf, sizeof(buf), 0);
-    Request req(fd, std::string(buf));
-    return req;
-}

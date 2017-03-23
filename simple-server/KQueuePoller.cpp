@@ -22,11 +22,6 @@ using std::endl;
 using std::runtime_error;
 using folly::MPMCQueue;
 
-
-std::unique_ptr<Poller> construct_poller(std::shared_ptr<folly::MPMCQueue<Request>> q) {
-    return std::make_unique<KQueuePoller>(q);
-}
-
 int conn_add(int fd);
 
 KQueuePoller::KQueuePoller(shared_ptr<MPMCQueue<Request>> queue)

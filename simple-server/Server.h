@@ -43,17 +43,22 @@ private:
 
 #if defined(unix) || defined(__unix__) || defined(__unix)
 
-std::unique_ptr<Poller> construct_poller(std::shared_ptr<folly::MPMCQueue<Request>> q) {
-    return std::make_unique<EPollPoller>(q);
+template<typename T>
+void Server<T>::run() {
+    ListeningSocket socket(address, port);
+    int local_socket = socket.get_socket_fd();
+
+    auto queue = std::make_shared<folly::MPMCQueue<Request>>(1024);
+    auto handler = std::shared_ptr<T>(new T());
+    Dequeuer dequeuer(queue, handler, num_threads);
+
+    dequeuer.begin();
+    
+    EPollPoller poller(queue);
+    poller.loop_forever(local_socket);
 }
 
 #else
-
-std::unique_ptr<Poller> construct_poller(std::shared_ptr<folly::MPMCQueue<Request>> q) {
-    return std::make_unique<KQueuePoller>(q);
-}
-
-#endif
 
 template<typename T>
 void Server<T>::run() {
@@ -66,6 +71,9 @@ void Server<T>::run() {
 
     dequeuer.begin();
     
-    std::unique_ptr<Poller> poller = construct_poller(queue);
-    poller->loop_forever(local_socket);
+    KQueuePoller poller(queue);
+    poller.loop_forever(local_socket);
 }
+
+#endif
+
